@@ -17,6 +17,7 @@ COPY ./app .
 RUN cp .env.production .env
 
 COPY ./php-fpm/php-ini-overrides.ini /etc/php/7.2/fpm/conf.d/99-overrides.ini
+COPY ./php-fpm/migrate.sh /application
 
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
@@ -29,6 +30,10 @@ RUN apt-get update \
 RUN chown -R www-data:www-data /application \
     /application/storage \
     /application/bootstrap/cache
+
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+
+RUN apt-get install nodejs -y
 
 RUN ["chmod","+x","migrate.sh"]
 
