@@ -1,0 +1,12 @@
+FROM wesleyvieira12/wacorner-php-fpm:v1
+
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+    supervisor
+ 
+COPY ./supervisor/supervisord.conf /etc/supervisor
+COPY ./supervisor/configs-supervisor /etc/supervisor/conf.d
+COPY ./supervisor/migrate2.sh /application
+RUN ["chmod","+x","migrate2.sh"]
+ENTRYPOINT ["sh","/application/migrate2.sh"]
+
