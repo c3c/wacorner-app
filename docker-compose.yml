@@ -1,107 +1,105 @@
-version: "3.1"
+version: "3.4"
 services:
-##################################################
-#                   REDIS                        #
-##################################################
-    redis:
-      image: redis:alpine
-      container_name: redis
-      restart: always
-      ports:
-        - "6379:6379"
-      networks:
-        - app-network 
-##################################################
-#                 PHPMYADMIN                     #
-##################################################
-    phpmyadmin:
-      image: phpmyadmin/phpmyadmin:latest
-      container_name: phpmyadmin 
-      restart: always
-      ports:
-        - "8081:80"
-      environment:
-        - PMA_ARBITRARY=1
-      links:
-        - mysql
-      networks:
-        - app-network
-      depends_on:
-        - "mysql"
-##################################################
-#                 MYSQL                          #
-##################################################
-    mysql:
-      image: mysql:5.7
-      container_name: mysql
-      working_dir: /application
-      restart: always
-      volumes:
-        - ./.docker/dbdata:/var/lib/mysql
-      environment:
-        - MYSQL_ROOT_PASSWORD=Moderador12@
-        - MYSQL_DATABASE=wacorner_bd
-        - MYSQL_USER=wacorner_user
-        - MYSQL_PASSWORD=Moderador12@
-      ports:
-        - "3306:3306"
-      networks:
-        - app-network
-##################################################
-#                 WEBSERVER                      #
-##################################################
-    webserver:
-      image: wesleyvieira12/wacorner-nginx:v1
-      container_name: webserver
-      working_dir: /application
-      restart: always
-      ports:
-       - "8080:80"
-      links:
-       - php-fpm
-      networks:
-        - app-network
-##################################################
-#                 SUPERVISOR                     #
-##################################################
-    supervisor:
-      build:
-        context: ./
-        dockerfile: Dockerfile-supervisor
-      container_name: supervisor
-      working_dir: /application
-      restart: always
-      # volumes:
-      #   - ./application:/application
-      ports:
-        - "9001:9001"
-      links:
-        - mysql
-        - redis
-      networks:
-        - app-network
-      depends_on:
-        - "mysql"
-        - "redis"
-##################################################
-#                 PHP-FPM                        #
-##################################################
-    php-fpm:
-      image: wesleyvieira12/wacorner-php-fpm:v1
-      container_name: php-fpm
-      working_dir: /application
-      restart: always
-      networks:
-        - app-network
-      links:
-        - mysql
-        - redis
-      depends_on:
-        - "mysql"
-        - "redis"
-##################################################
-#              REDES DOCKER                      #
-##################################################
+  web:
+    image: stefanscherer/whoami
+    networks:
+      - traefik
+    deploy:
+      replicas: 5
+      labels:
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:whoami.wacorner.com"
+        - "traefik.backend.loadbalancer.stickiness=true"
+
+  traefik_init:  
+    image: traefik:v1.7
+    command:
+      - "storeconfig" 
+      - "--defaultentrypoints=https,http"
+      - "--entryPoints=Name:http Address::80 Redirect.EntryPoint:https"
+      - "--entryPoints=Name:https Address::443 TLS"
+      - "--api"
+      - "--docker"
+      - "--docker.swarmMode"
+      - "--docker.domain=traefik"
+      - "--docker.watch"
+      - "--acme"
+      - "--acme.storage=traefik/acme/account"
+      - "--acme.entryPoint=https"
+      - "--acme.httpChallenge.entryPoint=http"
+      - "--acme.onHostRule=true"
+      - "--acme.onDemand=true"
+      - "--acme.email=wacornerstats@gmail.com"
+      - "--consul"
+      - "--consul.endpoint=consul:8500"
+      - "--consul.prefix=traefik"
+    networks:
+      - traefik
+    deploy:
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - consul
+  traefik:
+    image: traefik:v1.7
+    command:
+      - "--consul"
+      - "--consul.endpoint=consul:8500"
+      - "--consul.prefix=traefik"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    deploy:
+      placement:
+        constraints: 
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - traefik_init
+      - consul
+
+  consul:
+    image: consul
+    command: agent -server -bootstrap-expect=1
+    volumes:
+      - consul-data:/consul/data
+    environment:
+      - CONSUL_LOCAL_CONFIG={"datacenter":"us_east2","server":true}
+      - CONSUL_BIND_INTERFACE=eth0
+      - CONSUL_CLIENT_INTERFACE=eth0
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+    networks:
+      - traefik
+  visualizer:
+    image: dockersamples/visualizer:stable
+    networks:
+      - traefik
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      labels:
+        - "traefik.port=8080"
+        - "traefik.frontend.rule=Host:console.wacorner.com"
 networks:
-  app-network:
-    driver: bridge
+  traefik:
+    driver: overlay
+volumes:
+  consul-data:
+    driver: local
