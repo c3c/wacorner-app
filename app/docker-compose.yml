@@ -1,0 +1,29 @@
+version: '3'
+services:
+  laravel-app:
+    build: .
+    ports:
+      - "8080:80"
+    working_dir: /var/www/html
+    depends_on:
+      - mysql-app
+    networks:
+      - app-network
+  #   env_file: 'wacorner/.env'
+  #   enviroment:
+  #     - "DB_HOST=database"
+  mysql-app:
+    image: mysql:5.7
+    volumes:
+      - .docker/dbdata:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Moderador12@
+      MYSQL_DATABASE: wacorner_bd
+      MYSQL_PASSWORD: Moderador12@
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
+
+      
