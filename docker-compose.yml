@@ -47,7 +47,7 @@ services:
   nginx:
       image: wesleyvieira12/wacorner-nginx:v1
       ports:
-       - "8080:80"
+       - "8082:80"
       networks:
         - traefik
       deploy:
