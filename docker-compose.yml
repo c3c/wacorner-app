@@ -58,7 +58,7 @@ services:
           - node.role == manager
 networks:
   traefik:
-    - overlay
+    driver: overlay
 
   
 
