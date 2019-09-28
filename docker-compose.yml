@@ -5,30 +5,30 @@ services:
       ports:
         - "6379:6379"
       networks:
-        - traefik
+        - rede-geral
       deploy:
         replicas: 1
         placement:
           constraints: 
             - node.role == manager
-  phpmyadmin:
-      image: phpmyadmin/phpmyadmin:latest
-      ports:
-        - "8081:80"
-      environment:
-        - PMA_ARBITRARY=1
-      networks:
-        - traefik
-      depends_on:
-        - "mysql"
-      deploy:
-        replicas: 1
-        placement:
-          constraints: 
-            - node.role == worker
-        labels:
-            - "traefik.port=8081"
-            - "traefik.frontend.rule=Host:mysql.wacorner.com"
+  # phpmyadmin:
+  #     image: phpmyadmin/phpmyadmin:latest
+  #     ports:
+  #       - "8081:80"
+  #     environment:
+  #       - PMA_ARBITRARY=1
+  #     networks:
+  #       - rede-geral
+  #     depends_on:
+  #       - "mysql"
+  #     deploy:
+  #       replicas: 1
+  #       placement:
+  #         constraints: 
+  #           - node.role == worker
+  #       labels:
+  #           - "traefik.port=8081"
+  #           - "traefik.frontend.rule=Host:mysql.wacorner.com"
   mysql:
       image: mysql
       command: --default-authentication-plugin=mysql_native_password
@@ -42,58 +42,58 @@ services:
       ports:
         - "3306:3306"
       networks:
-        - traefik
+        - rede-geral
       deploy:
         replicas: 1
         placement:
           constraints: 
             - node.role == manager
-  nginx:
-      image: wesleyvieira12/wacorner-nginx:v1
-      ports:
-       - "8082:80"
-      networks:
-        - traefik
-      deploy:
-        replicas: 1
-        placement:
-          constraints: 
-            - node.role == worker
-        labels:
-          - "traefik.port=8082"
-          - "traefik.frontend.rule=Host:corner.wacorner.com"
-          - "traefik.backend.loadbalancer.stickiness=true"
-  php-fpm:
-      image: wesleyvieira12/wacorner-php-fpm:v1
-      networks:
-        - traefik
-      ports:
-        - "9000:9000"
-      depends_on:
-        - "mysql"
-        - "redis"
-      deploy:
-        replicas: 1
-        placement:
-          constraints: 
-            - node.role == worker
-  supervisor:
-      image: wesleyvieira12/wacorner-supervisor:v1
-      networks:
-        - traefik
-      ports:
-        - "9001:9001"
-      depends_on:
-        - "mysql"
-        - "redis"
-      deploy:
-        replicas: 1
-        placement:
-          constraints: 
-            - node.role == worker
-        labels:
-          - "traefik.port=9001"
-          - "traefik.frontend.rule=Host:supervisor.wacorner.com"
+  # nginx:
+  #     image: wesleyvieira12/wacorner-nginx:v1
+  #     ports:
+  #      - "8082:80"
+  #     networks:
+  #       - rede-geral
+  #     deploy:
+  #       replicas: 1
+  #       placement:
+  #         constraints: 
+  #           - node.role == worker
+  #       labels:
+  #         - "traefik.port=8082"
+  #         - "traefik.frontend.rule=Host:corner.wacorner.com"
+  #         - "traefik.backend.loadbalancer.stickiness=true"
+  # php-fpm:
+  #     image: wesleyvieira12/wacorner-php-fpm:v1
+  #     networks:
+  #       - rede-geral
+  #     ports:
+  #       - "9000:9000"
+  #     depends_on:
+  #       - "mysql"
+  #       - "redis"
+  #     deploy:
+  #       replicas: 1
+  #       placement:
+  #         constraints: 
+  #           - node.role == worker
+  # supervisor:
+  #     image: wesleyvieira12/wacorner-supervisor:v1
+  #     networks:
+  #       - rede-geral
+  #     ports:
+  #       - "9001:9001"
+  #     depends_on:
+  #       - "mysql"
+  #       - "redis"
+  #     deploy:
+  #       replicas: 1
+  #       placement:
+  #         constraints: 
+  #           - node.role == worker
+  #       labels:
+  #         - "traefik.port=9001"
+  #         - "traefik.frontend.rule=Host:supervisor.wacorner.com"
   traefik_init:  
     image: traefik:v1.7
     command:
@@ -104,7 +104,7 @@ services:
       - "--api"
       - "--docker"
       - "--docker.swarmMode"
-      - "--docker.domain=traefik"
+      - "--docker.domain=wacorner.com"
       - "--docker.watch"
       - "--acme"
       - "--acme.storage=traefik/acme/account"
@@ -117,7 +117,7 @@ services:
       - "--consul.endpoint=consul:8500"
       - "--consul.prefix=traefik"
     networks:
-      - traefik
+      - rede-geral
     deploy:
       restart_policy:
         condition: on-failure
@@ -132,7 +132,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - traefik
+      - rede-geral
     ports:
       - "80:80"
       - "443:443"
@@ -167,11 +167,11 @@ services:
       restart_policy:
         condition: on-failure
     networks:
-      - traefik
+      - rede-geral
   visualizer:
     image: dockersamples/visualizer:stable
     networks:
-      - traefik
+      - rede-geral
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
@@ -181,7 +181,7 @@ services:
         - "traefik.port=8080"
         - "traefik.frontend.rule=Host:console.wacorner.com"
 networks:
-  traefik:
+  rede-geral:
     driver: overlay
 volumes:
   consul-data:
