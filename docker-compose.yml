@@ -91,6 +91,7 @@ services:
         labels:
           - "traefik.port=9001"
           - "traefik.frontend.rule=Host:supervisor.wacorner.com"
+          - "traefik.docker.network: rede-geral"
       depends_on:
         - traefik_init
         - consul
@@ -100,6 +101,7 @@ services:
   traefik_init:  
     image: traefik:v1.7
     command:
+      - "traefik"
       - "storeconfig" 
       - "--defaultentrypoints=https,http"
       - "--entryPoints=Name:http Address::80 Redirect.EntryPoint:https"
