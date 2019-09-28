@@ -51,7 +51,7 @@ services:
       networks:
         - traefik
       deploy:
-        replicas: 5
+        replicas: 1
         labels:
           - "traefik.port=8082"
           - "traefik.frontend.rule=Host:corner.wacorner.com"
@@ -66,7 +66,7 @@ services:
         - "mysql"
         - "redis"
       deploy:
-        replicas: 5
+        replicas: 1
   supervisor:
       image: wesleyvieira12/wacorner-supervisor:v1
       networks:
