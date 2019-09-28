@@ -14,6 +14,8 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    networks:
+      - traefik
     deploy:
       replicas: 1
       placement:
@@ -27,6 +29,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.wacorner.com`)"
       - "traefik.http.routers.whoami.entrypoints=web"
+    networks:
+      - traefik
     deploy:
       replicas: 2
 
@@ -34,6 +38,8 @@ services:
     image: dockersamples/visualizer:stable
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik
     deploy:
       placement:
         constraints: [node.role == manager]
@@ -43,11 +49,16 @@ services:
         - "traefik.http.routers.visualiser.entrypoints=web"
     depends_on:
       - traefik
+    networks:
+      - traefik
     deploy:
       replicas: 1
       placement:
         constraints:
           - node.role == manager
+networks:
+  traefik:
+    - overlay
 
   
 
