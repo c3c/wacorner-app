@@ -12,17 +12,21 @@ services:
       - "--providers.docker.exposedbydefault=true"
       - "--entrypoints.web.address=:80"
       - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.sample.acme.tlschallenge=true"
       - "--certificatesResolvers.sample.acme.email="wacornerstats@gmail.com"
-      - "--certificatesResolvers.sample.acme.storage='acme.json'"
+      - "--certificatesResolvers.sample.acme.storage='/etc/traefik/acme'"
       - "--certificatesResolvers.sample.acme.httpChallenge.entryPoint=web"
-      - "--certificatesResolvers.sample.acme.dnsChallenge.provider=cloudflare"
-      - "--certificatesResolvers.sample.acme.dnsChallenge.delayBeforeCheck=0"
+      # - "--certificatesresolvers.sample.acme.dnschallenge=true"
+      # - "--certificatesResolvers.sample.acme.dnsChallenge.provider=cloudflare"
+      # - "--certificatesResolvers.sample.acme.dnsChallenge.delayBeforeCheck=0"
+      - "--log.level=DEBUG"
     ports:
       - "80:80"
       - "8080:8080"
+      - "443:443"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./certificates/acme.json:acme.json"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./certificates/:/etc/traefik/acme"
     networks:
       - traefik
     deploy:
@@ -35,10 +39,10 @@ services:
     image: "containous/whoami"
     container_name: "simple-service"
     labels:
-      - traefik.http.routers.whoami.rule=Host(`whoami.wacorner.com`)
-      - traefik.http.services.whoami-service.loadbalancer.server.port=80
-      - "traefik.http.routers.whoami.tls=true"
-      - "traefik.http.routers.whoami.entrypoints=web,websecure"
+      - "traefik.http.routers.whoami.rule=Host(`whoami.wacorner.com`)"
+      - "traefik.http.services.whoami-service.loadbalancer.server.port=80"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=sample"
     networks:
       - traefik
     deploy:
@@ -55,10 +59,10 @@ services:
         constraints:
           - node.role == manager
       labels:
-      - traefik.http.routers.visualizer.rule=Host(`console.wacorner.com`)
-      - traefik.http.services.visualizer-service.loadbalancer.server.port=8080
-      - "traefik.http.routers.visualizer.tls=true"
-      - "traefik.http.routers.visualizer.entrypoints=web,websecure"
+      - "traefik.http.routers.visualizer.rule=Host(`console.wacorner.com`)"
+      - "traefik.http.services.visualizer-service.loadbalancer.server.port=8080"
+      - "traefik.http.routers.visualizer.entrypoints=websecure"
+      - "traefik.http.routers.visualizer.tls.certresolver=sample"
     depends_on:
       - traefik
 
