@@ -13,7 +13,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entryPoints.websecure.address=:443"
       - "--certificatesresolvers.sample.acme.tlschallenge=true"
-      - "--certificatesResolvers.sample.acme.email="wacornerstats@gmail.com"
+      - "--certificatesResolvers.sample.acme.email='wacornerstats@gmail.com'"
       - "--certificatesResolvers.sample.acme.storage='/etc/traefik/acme'"
       - "--certificatesResolvers.sample.acme.httpChallenge.entryPoint=web"
       # - "--certificatesresolvers.sample.acme.dnschallenge=true"
