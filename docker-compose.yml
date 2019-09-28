@@ -7,13 +7,22 @@ services:
       - "--log.level=DEBUG"
       - "--api.insecure=true"
       - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.endpoint='unix:///var/run/docker.sock'"
+      - "--providers.docker.swarmMode=true"
+      - "--providers.docker.exposedbydefault=true"
       - "--entrypoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesResolvers.sample.acme.email="wacornerstats@gmail.com"
+      - "--certificatesResolvers.sample.acme.storage='acme.json'"
+      - "--certificatesResolvers.sample.acme.httpChallenge.entryPoint=web"
+      - "--certificatesResolvers.sample.acme.dnsChallenge.provider=cloudflare"
+      - "--certificatesResolvers.sample.acme.dnsChallenge.delayBeforeCheck=0"
     ports:
       - "80:80"
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./certificates/acme.json:acme.json"
     networks:
       - traefik
     deploy:
@@ -26,9 +35,10 @@ services:
     image: "containous/whoami"
     container_name: "simple-service"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.whoami.rule=Host(`whoami.wacorner.com`)"
-      - "traefik.http.routers.whoami.entrypoints=web"
+      - traefik.http.routers.whoami.rule=Host(`whoami.wacorner.com`)
+      - traefik.http.services.whoami-service.loadbalancer.server.port=80
+      - "traefik.http.routers.whoami.tls=true"
+      - "traefik.http.routers.whoami.entrypoints=web,websecure"
     networks:
       - traefik
     deploy:
@@ -42,20 +52,16 @@ services:
       - traefik
     deploy:
       placement:
-        constraints: [node.role == manager]
-      labels:
-        - "traefik.enable=true"
-        - "traefik.http.routers.visualiser.rule=Host(`console.wacorner.com`)"
-        - "traefik.http.routers.visualiser.entrypoints=web"
-    depends_on:
-      - traefik
-    networks:
-      - traefik
-    deploy:
-      replicas: 1
-      placement:
         constraints:
           - node.role == manager
+      labels:
+      - traefik.http.routers.visualizer.rule=Host(`console.wacorner.com`)
+      - traefik.http.services.visualizer-service.loadbalancer.server.port=8080
+      - "traefik.http.routers.visualizer.tls=true"
+      - "traefik.http.routers.visualizer.entrypoints=web,websecure"
+    depends_on:
+      - traefik
+
 networks:
   traefik:
     driver: overlay
