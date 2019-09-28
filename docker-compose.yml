@@ -14,6 +14,11 @@ services:
       - "8080:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   whoami:
     image: "containous/whoami"
@@ -22,7 +27,9 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.whoami.rule=Host(`whoami.wacorner.com`)"
       - "traefik.http.routers.whoami.entrypoints=web"
-  
+    deploy:
+      replicas: 2
+
   visualizer:
     image: dockersamples/visualizer:stable
     volumes:
@@ -36,6 +43,11 @@ services:
         - "traefik.http.routers.visualiser.entrypoints=web"
     depends_on:
       - traefik
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
   
 
