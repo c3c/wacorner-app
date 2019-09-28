@@ -53,7 +53,7 @@ services:
       deploy:
         replicas: 5
         labels:
-          - "traefik.port=8080"
+          - "traefik.port=8082"
           - "traefik.frontend.rule=Host:corner.wacorner.com"
           - "traefik.backend.loadbalancer.stickiness=true"
   php-fpm:
@@ -78,6 +78,9 @@ services:
         - "redis"
       deploy:
         replicas: 1
+        labels:
+          - "traefik.port=9001"
+          - "traefik.frontend.rule=Host:supervisor.wacorner.com"
   traefik_init:  
     image: traefik:v1.7
     command:
