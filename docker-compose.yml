@@ -5,7 +5,7 @@ services:
       ports:
         - "6379:6379"
       networks:
-        - rede-geral
+        - traefik
       deploy:
         replicas: 1
         placement:
@@ -18,7 +18,7 @@ services:
       environment:
         - PMA_ARBITRARY=1
       networks:
-        - rede-geral
+        - traefik
       depends_on:
         - "mysql"
       deploy:
@@ -47,7 +47,7 @@ services:
       ports:
         - "3306:3306"
       networks:
-        - rede-geral
+        - traefik
       deploy:
         replicas: 1
         placement:
@@ -58,7 +58,7 @@ services:
   #     ports:
   #      - "8082:80"
   #     networks:
-  #       - rede-geral
+  #       - traefik
   #     deploy:
   #       replicas: 1
   #       placement:
@@ -71,7 +71,7 @@ services:
   # php-fpm:
   #     image: wesleyvieira12/wacorner-php-fpm:v1
   #     networks:
-  #       - rede-geral
+  #       - traefik
   #     ports:
   #       - "9000:9000"
   #     depends_on:
@@ -85,7 +85,7 @@ services:
   supervisor:
       image: wesleyvieira12/wacorner-supervisor:v1
       networks:
-        - rede-geral
+        - traefik
       ports:
         - "9001:9001"
       deploy:
@@ -96,50 +96,49 @@ services:
         labels:
           - "traefik.port=9001"
           - "traefik.frontend.rule=Host:supervisor.wacorner.com"
-          - "traefik.docker.network: rede-geral"
+          - "traefik.docker.network: traefik"
       depends_on:
         - traefik_init
         - traefik
         - consul
         - mysql
         - redis
-
-  traefik_init:  
-    image: traefik:v1.7
+  
+  traefik_init:
+    image: traefik:v1.7.18-alpine
     command:
-      - "traefik"
-      - "storeconfig" 
-      - "--defaultentrypoints=https,http"
-      - "--entryPoints=Name:http Address::80 Redirect.EntryPoint:https"
-      - "--entryPoints=Name:https Address::443 TLS"
+      - "storeconfig"
       - "--api"
-      - "--docker"
-      - "--docker.swarmMode"
-      - "--docker.domain=wacorner.com"
-      - "--docker.watch"
+      - "--entrypoints=Name:http Address::80 Redirect.EntryPoint:https"
+      - "--entrypoints=Name:https Address::443 TLS"
+      - "--defaultentrypoints=http,https"
       - "--acme"
       - "--acme.storage=traefik/acme/account"
       - "--acme.entryPoint=https"
       - "--acme.httpChallenge.entryPoint=http"
       - "--acme.onHostRule=true"
-      - "--acme.onDemand=true"
-      - "--acme.email=wacornerstats@gmail.com"
+      - "--acme.onDemand=false"
+      - "--acme.email=wesleyvieira12@gmail.com"
+      - "--docker"
+      - "--docker.swarmMode"
+      - "--docker.domain=wacorner.com"
+      - "--docker.watch"
       - "--consul"
       - "--consul.endpoint=consul:8500"
       - "--consul.prefix=traefik"
     networks:
-      - rede-geral
+      - traefik
     deploy:
-      replicas: 1
       restart_policy:
         condition: on-failure
-      placement:
-        constraints: 
-          - node.role == manager
     depends_on:
       - consul
+  
   traefik:
-    image: traefik:v1.7
+    image: traefik:v1.7.18-alpine
+    depends_on:
+      - traefik_init
+      - consul
     command:
       - "--consul"
       - "--consul.endpoint=consul:8500"
@@ -147,24 +146,29 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - rede-geral
+      - webgateway
+      - traefik
     ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
+      - target: 80
+        published: 80
+        mode: host
+      - target: 443
+        published: 443
+        mode: host
+      - target: 8080
+        published: 8080
+        mode: host
     deploy:
+      mode: global
       placement:
-        constraints: 
+        constraints:
           - node.role == manager
       update_config:
         parallelism: 1
         delay: 10s
       restart_policy:
         condition: on-failure
-    depends_on:
-      - traefik_init
-      - consul
-
+  
   consul:
     image: consul
     command: agent -server -bootstrap-expect=1
@@ -182,11 +186,12 @@ services:
       restart_policy:
         condition: on-failure
     networks:
-      - rede-geral
+      - traefik
+  
   visualizer:
     image: dockersamples/visualizer:stable
     networks:
-      - rede-geral
+      - traefik
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
@@ -199,9 +204,18 @@ services:
       - traefik_init
       - traefik
       - consul
+
 networks:
-  rede-geral:
+  webgateway:
     driver: overlay
+    external: true
+  traefik:
+    driver: overlay
+
 volumes:
   consul-data:
-    driver: local
+      driver: local
+
+  
+
+
