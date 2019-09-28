@@ -11,24 +11,29 @@ services:
         placement:
           constraints: 
             - node.role == manager
-  # phpmyadmin:
-  #     image: phpmyadmin/phpmyadmin:latest
-  #     ports:
-  #       - "8081:80"
-  #     environment:
-  #       - PMA_ARBITRARY=1
-  #     networks:
-  #       - rede-geral
-  #     depends_on:
-  #       - "mysql"
-  #     deploy:
-  #       replicas: 1
-  #       placement:
-  #         constraints: 
-  #           - node.role == worker
-  #       labels:
-  #           - "traefik.port=8081"
-  #           - "traefik.frontend.rule=Host:mysql.wacorner.com"
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin:latest
+      ports:
+        - "8081:80"
+      environment:
+        - PMA_ARBITRARY=1
+      networks:
+        - rede-geral
+      depends_on:
+        - "mysql"
+      deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == worker
+        labels:
+            - "traefik.port=8081"
+            - "traefik.frontend.rule=Host:mysql.wacorner.com"
+      depends_on:
+        - traefik_init
+        - consul
+        - mysql
+        - traefik
   mysql:
       image: mysql
       command: --default-authentication-plugin=mysql_native_password
@@ -94,6 +99,7 @@ services:
           - "traefik.docker.network: rede-geral"
       depends_on:
         - traefik_init
+        - traefik
         - consul
         - mysql
         - redis
@@ -124,8 +130,12 @@ services:
     networks:
       - rede-geral
     deploy:
+      replicas: 1
       restart_policy:
         condition: on-failure
+      placement:
+        constraints: 
+          - node.role == manager
     depends_on:
       - consul
   traefik:
@@ -185,6 +195,10 @@ services:
       labels:
         - "traefik.port=8080"
         - "traefik.frontend.rule=Host:console.wacorner.com"
+    depends_on:
+      - traefik_init
+      - traefik
+      - consul
 networks:
   rede-geral:
     driver: overlay
