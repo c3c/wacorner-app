@@ -1,0 +1,105 @@
+version: "3.1"
+services:
+##################################################
+#                   REDIS                        #
+##################################################
+    redis:
+      image: redis:alpine
+      container_name: redis
+      restart: always
+      ports:
+        - "6379:6379"
+      networks:
+        - app-network 
+##################################################
+#                 PHPMYADMIN                     #
+##################################################
+    phpmyadmin:
+      image: phpmyadmin/phpmyadmin:latest
+      container_name: phpmyadmin 
+      restart: always
+      ports:
+        - "8081:80"
+      environment:
+        - PMA_ARBITRARY=1
+      links:
+        - mysql
+      networks:
+        - app-network
+      depends_on:
+        - "mysql"
+##################################################
+#                 MYSQL                          #
+##################################################
+    mysql:
+      image: mysql:5.7
+      container_name: mysql
+      working_dir: /application
+      restart: always
+      volumes:
+        - ./.docker/dbdata:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=Moderador12@
+        - MYSQL_DATABASE=wacorner_bd
+        - MYSQL_USER=wacorner_user
+        - MYSQL_PASSWORD=Moderador12@
+      ports:
+        - "3306:3306"
+      networks:
+        - app-network
+##################################################
+#                 WEBSERVER                      #
+##################################################
+    webserver:
+      image: wesleyvieira12/wacorner-nginx:v1
+      container_name: webserver
+      working_dir: /application
+      restart: always
+      ports:
+       - "8080:80"
+      links:
+       - php-fpm
+      networks:
+        - app-network
+##################################################
+#                 SUPERVISOR                     #
+##################################################
+    supervisor:
+      image: wesleyvieira12/wacorner-supervisor:v1
+      container_name: supervisor
+      working_dir: /application
+      restart: always
+      # volumes:
+      #   - ./application:/application
+      ports:
+        - "9001:9001"
+      links:
+        - mysql
+        - redis
+      networks:
+        - app-network
+      depends_on:
+        - "mysql"
+        - "redis"
+##################################################
+#                 PHP-FPM                        #
+##################################################
+    php-fpm:
+      image: wesleyvieira12/wacorner-php-fpm:v1
+      container_name: php-fpm
+      working_dir: /application
+      restart: always
+      networks:
+        - app-network
+      links:
+        - mysql
+        - redis
+      depends_on:
+        - "mysql"
+        - "redis"
+##################################################
+#              REDES DOCKER                      #
+##################################################
+networks:
+  app-network:
+    driver: bridge

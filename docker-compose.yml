@@ -1,16 +1,83 @@
 version: "3.4"
 services:
-  web:
-    image: stefanscherer/whoami
-    networks:
-      - traefik
-    deploy:
-      replicas: 5
-      labels:
-        - "traefik.port=8080"
-        - "traefik.frontend.rule=Host:whoami.wacorner.com"
-        - "traefik.backend.loadbalancer.stickiness=true"
-
+  redis:
+      image: redis:alpine
+      ports:
+        - "6379:6379"
+      networks:
+        - traefik
+      deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin:latest
+      ports:
+        - "8081:80"
+      environment:
+        - PMA_ARBITRARY=1
+      networks:
+        - traefik
+      depends_on:
+        - "mysql"
+      deploy:
+        replicas: 1
+        labels:
+            - "traefik.port=8081"
+            - "traefik.frontend.rule=Host:mysql.wacorner.com"
+  mysql:
+      image: mysql:5.7
+      volumes:
+        - ./.docker/dbdata:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=Moderador12@
+        - MYSQL_DATABASE=wacorner_bd
+        - MYSQL_USER=wacorner_user
+        - MYSQL_PASSWORD=Moderador12@
+      ports:
+        - "3306:3306"
+      networks:
+        - traefik
+      deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+  nginx:
+      image: wesleyvieira12/wacorner-nginx:v1
+      ports:
+       - "8080:80"
+      networks:
+        - traefik
+      deploy:
+        replicas: 5
+        labels:
+          - "traefik.port=8080"
+          - "traefik.frontend.rule=Host:corner.wacorner.com"
+          - "traefik.backend.loadbalancer.stickiness=true"
+  php-fpm:
+      image: wesleyvieira12/wacorner-php-fpm:v1
+      networks:
+        - traefik
+      ports:
+        - "9000:9000"
+      depends_on:
+        - "mysql"
+        - "redis"
+      deploy:
+        replicas: 5
+  supervisor:
+      image: wesleyvieira12/wacorner-supervisor:v1
+      networks:
+        - traefik
+      ports:
+        - "9001:9001"
+      depends_on:
+        - "mysql"
+        - "redis"
+      deploy:
+        replicas: 1
   traefik_init:  
     image: traefik:v1.7
     command:
