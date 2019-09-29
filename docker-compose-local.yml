@@ -51,7 +51,9 @@ services:
 #                 NGINX                          #
 ##################################################
     nginx:
-      image: wesleyvieira12/wacorner-nginx:v1
+      build:
+        context: ./
+        dockerfile: Dockerfile-nginx
       container_name: nginx
       working_dir: /application
       restart: always
@@ -65,7 +67,9 @@ services:
 #                 SUPERVISOR                     #
 ##################################################
     supervisor:
-      image: wesleyvieira12/wacorner-supervisor:v1
+      build:
+        context: ./
+        dockerfile: Dockerfile-supervisor
       container_name: supervisor
       working_dir: /application
       restart: always
@@ -85,7 +89,9 @@ services:
 #                 PHP-FPM                        #
 ##################################################
     php-fpm:
-      image: wesleyvieira12/wacorner-php-fpm:v1
+      build:
+        context: ./
+        dockerfile: Dockerfile-php-fpm
       container_name: php-fpm
       working_dir: /application
       restart: always
