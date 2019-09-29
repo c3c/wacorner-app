@@ -22,41 +22,41 @@ services:
         - "8081:80"
       environment:
         - PMA_ARBITRARY=1
-      links:
-        - mysql
+      # links:
+      #   - mysql
       networks:
         - app-network
-      depends_on:
-        - "mysql"
+      # depends_on:
+      #   - "mysql"
+# ##################################################
+# #                 MYSQL                          #
+# ##################################################
+#     mysql:
+#       image: mysql:5.7
+#       container_name: mysql
+#       working_dir: /application
+#       restart: always
+#       volumes:
+#         - ./.docker/dbdata:/var/lib/mysql
+#       environment:
+#         - MYSQL_ROOT_PASSWORD=Moderador12@
+#         - MYSQL_DATABASE=wacorner_bd
+#         - MYSQL_USER=wacorner_user
+#         - MYSQL_PASSWORD=Moderador12@
+#       ports:
+#         - "3306:3306"
+#       networks:
+#         - app-network
 ##################################################
-#                 MYSQL                          #
+#                 NGINX                          #
 ##################################################
-    mysql:
-      image: mysql:5.7
-      container_name: mysql
-      working_dir: /application
-      restart: always
-      volumes:
-        - ./.docker/dbdata:/var/lib/mysql
-      environment:
-        - MYSQL_ROOT_PASSWORD=Moderador12@
-        - MYSQL_DATABASE=wacorner_bd
-        - MYSQL_USER=wacorner_user
-        - MYSQL_PASSWORD=Moderador12@
-      ports:
-        - "3306:3306"
-      networks:
-        - app-network
-##################################################
-#                 WEBSERVER                      #
-##################################################
-    webserver:
+    nginx:
       image: wesleyvieira12/wacorner-nginx:v1
-      container_name: webserver
+      container_name: nginx
       working_dir: /application
       restart: always
       ports:
-       - "8080:80"
+       - "80:80"
       links:
        - php-fpm
       networks:
@@ -74,12 +74,12 @@ services:
       ports:
         - "9001:9001"
       links:
-        - mysql
+        # - mysql
         - redis
       networks:
         - app-network
       depends_on:
-        - "mysql"
+        # - "mysql"
         - "redis"
 ##################################################
 #                 PHP-FPM                        #
@@ -92,10 +92,10 @@ services:
       networks:
         - app-network
       links:
-        - mysql
+        # - mysql
         - redis
       depends_on:
-        - "mysql"
+        # - "mysql"
         - "redis"
 ##################################################
 #              REDES DOCKER                      #
