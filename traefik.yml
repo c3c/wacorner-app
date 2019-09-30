@@ -48,17 +48,6 @@ services:
         # placement:
         #   constraints: 
         #     - node.role == worker
-        labels:
-            - traefik.frontend.rule=Host:corner.${DOMAIN?Variable DOMAIN not set}
-            - traefik.enable=true
-            - traefik.port=80
-            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
-            - traefik.docker.network=traefik-public
-            # Traefik service that listens to HTTP
-            - traefik.redirectorservice.frontend.entryPoints=http
-            - traefik.redirectorservice.frontend.redirect.entryPoint=https
-            # Traefik service that listens to HTTPS
-            - traefik.webservice.frontend.entryPoints=https
     depends_on:
       - traefik
       - consul-leader
@@ -74,7 +63,7 @@ services:
         #   constraints: 
         #     - node.role == worker
         labels:
-            - traefik.frontend.rule=Host:${DOMAIN?Variable DOMAIN not set}
+            - traefik.frontend.rule=Host:corner.${DOMAIN?Variable DOMAIN not set}
             - traefik.enable=true
             - traefik.port=80
             - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
