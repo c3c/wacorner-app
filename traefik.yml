@@ -1,6 +1,56 @@
 version: '3.3'
 
 services:
+  whoami:
+    image: "containous/whoami"
+    networks:
+      - default
+      - traefik-public
+    ports:
+      - "8082:80"
+    deploy:
+        replicas: 2
+        placement:
+          constraints: 
+            - node.role == worker
+        labels:
+            - traefik.frontend.rule=Host:whoami.${DOMAIN?Variable DOMAIN not set}
+            - traefik.enable=true
+            - traefik.port=8082
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+  visualizer:
+    image: dockersamples/visualizer:stable
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
+      - traefik-public
+    ports:
+      - "8083:8080"
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+            - traefik.frontend.rule=Host:visualizer.${DOMAIN?Variable DOMAIN not set}
+            - traefik.enable=true
+            - traefik.port=8083
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+    depends_on:
+      - traefik
+      - consul-leader
   phpmyadmin:
       image: phpmyadmin/phpmyadmin:latest
       ports:
@@ -8,6 +58,7 @@ services:
       environment:
         - PMA_ARBITRARY=1
       networks:
+        - default
         - traefik-public
       depends_on:
         - mysql
@@ -42,6 +93,7 @@ services:
       ports:
         - "3306:3306"
       networks:
+        - default
         - traefik-public
       depends_on:
         - consul-leader
@@ -151,3 +203,5 @@ volumes:
 networks:
   traefik-public:
     external: true
+  default:
+    driver: overlay
