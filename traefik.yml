@@ -49,7 +49,7 @@ services:
         #   constraints: 
         #     - node.role == worker
         labels:
-            - traefik.frontend.rule=Host:${DOMAIN?Variable DOMAIN not set}
+            - traefik.frontend.rule=Host:corner.${DOMAIN?Variable DOMAIN not set}
             - traefik.enable=true
             - traefik.port=80
             - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
