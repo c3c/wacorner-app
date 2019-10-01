@@ -44,4 +44,14 @@ RUN apt-get update \
 COPY ./supervisor/supervisord.conf /etc/supervisor
 COPY ./supervisor/configs-supervisor /etc/supervisor/conf.d
 
+###########################################################################
+# Crontab
+###########################################################################
+
+USER root
+
+COPY ./supervisor/crontab /etc/cron.d
+
+RUN chmod -R 644 /etc/cron.d
+
 ENTRYPOINT ["sh","/application/migrate.sh"]
