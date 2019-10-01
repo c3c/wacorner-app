@@ -225,8 +225,9 @@ services:
       --docker.watch
       --docker.exposedbydefault=false
       --constraints=tag==traefik-public
-      --entrypoints='Name:http Address::80'
+      --entrypoints='Name:http Address::80 Redirect.EntryPoint:https'
       --entrypoints='Name:https Address::443 TLS'
+      --defaultentrypoints=http,https
       --consul
       --consul.endpoint="consul-leader:8500"
       --acme
