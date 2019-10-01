@@ -176,7 +176,7 @@ services:
         - traefik.redirectorservice.frontend.redirect.entryPoint=https
         # Traefik service that listens to HTTPS
         - traefik.webservice.frontend.entryPoints=https
-        - traefik.frontend.auth.basic.users=root:$apr1$TGnfXVRQ$PUntYRH4veA49R4EqInV8/
+        - traefik.frontend.auth.basic.users=root:$$apr1$$1VXPIXMN$$ukv0dy9P0ukeyfnh8/X4/.
   consul-replica:
     image: consul
     command: agent -server -client=0.0.0.0 -retry-join="consul-leader"
@@ -216,7 +216,7 @@ services:
         - traefik.redirectorservice.frontend.redirect.entryPoint=https
         # Traefik service that listens to HTTPS
         - traefik.webservice.frontend.entryPoints=https
-        - traefik.frontend.auth.basic.users=root:$apr1$TGnfXVRQ$PUntYRH4veA49R4EqInV8/
+        - traefik.frontend.auth.basic.users=root:$$apr1$$1VXPIXMN$$ukv0dy9P0ukeyfnh8/X4/.
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: >
