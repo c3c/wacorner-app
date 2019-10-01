@@ -17,7 +17,7 @@ services:
           constraints: 
             - node.role == manager
   supervisor:
-    image: wesleyvieira12/wacorner-supervisor:v4
+    image: wesleyvieira12/wacorner-supervisor:v3
     networks:
       - default
       - traefik-public
@@ -39,7 +39,7 @@ services:
       - consul-leader
       - mysql
   php-fpm:
-    image: wesleyvieira12/wacorner-php-fpm:v4
+    image: wesleyvieira12/wacorner-php-fpm:v5
     networks:
       - default
       - traefik-public

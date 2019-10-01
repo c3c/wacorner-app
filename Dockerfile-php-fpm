@@ -31,6 +31,9 @@ RUN chown -R www-data:www-data /application \
     /application/storage \
     /application/bootstrap/cache
 
+RUN chmod -R 775 storage & \
+    chmod -R 775 bootstrap/cache
+
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 RUN apt-get install nodejs -y
