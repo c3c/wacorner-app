@@ -63,7 +63,7 @@ services:
         #   constraints: 
         #     - node.role == worker
         labels:
-            - traefik.frontend.rule=Host:corner.wacorner.com
+            - traefik.frontend.rule=Host:wacorner.com
             - traefik.enable=true
             - traefik.port=80
             - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
