@@ -19,7 +19,7 @@ use Telegram\Bot\Exceptions\TelegramResponseException;
 use Storage;
 use Illuminate\Support\Facades\Cache;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
 {
     use Notifiable;
   

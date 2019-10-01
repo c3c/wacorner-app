@@ -10,7 +10,7 @@ $this->post('/telegram/webhook','Admin\BotTelegramController@getWebhook');
 /****************************************************************************************/
 
 //PRECISA ESTAR LOGADO E A DATA DE EXPIRAÇÃO MAIOR OU IGUAL A DE HOJE
-$this->group(['middleware' => ['auth','ativo','verified','auth.unique.user'], 'namespace' => 'Gestao','prefix'=>'admin'],function()
+$this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' => 'Gestao','prefix'=>'admin'],function()
 {
 
 	//ESTRATEGIAS REGISTRADAS PARA GESTÂO
@@ -39,7 +39,7 @@ $this->group(['middleware' => ['auth','ativo','verified','auth.unique.user'], 'n
 });
 
 //PRECISA ESTAR LOGADO E A DATA DE EXPIRAÇÃO MAIOR OU IGUAL A DE HOJE
-$this->group(['middleware' => ['auth','ativo','verified','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
+$this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
 
 	//ROBÔ
 	Route::resource('robos', 'RoboController');
@@ -101,7 +101,7 @@ $this->group(['middleware' => ['auth','ativo','verified','auth.unique.user'], 'n
 });
 
 //SÓ PRECISA ESTAR LOGADO PARA ACESSAR
-$this->group(['middleware' => ['auth','verified','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
+$this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
 	//SAQUES
 	$this->get('/saque/cupon/{user_id}','SaqueController@index_cupon')->name('saque.index');
 	$this->post('/saque/store','SaqueController@store')->name('saque.store');
@@ -149,7 +149,7 @@ $this->group(['middleware' => ['auth','verified','auth.unique.user'], 'namespace
 });
 
 //SOMENTE ADMINISTRADORES
-$this->group(['middleware' => ['auth','is_admin','verified','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
+$this->group(['middleware' => ['auth','is_admin','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
 	
 	//VENDAS
 	$this->post('/venda/relatorio', 'VendaController@search')->name('venda.show.search');
@@ -188,6 +188,6 @@ $this->get('/update', 'UpdateController@all');
 $this->get('/update/bot_lista', 'UpdateController@listaJogosBot');
 
 //Todas as rotas do login
-Auth::routes(['verify' => true]);
+Auth::routes();
 
 

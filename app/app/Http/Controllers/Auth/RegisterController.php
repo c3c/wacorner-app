@@ -105,7 +105,7 @@ class RegisterController extends Controller
         'cpf' => $data['cpf'],
         'email' => $data['email'],
         'user_id' => $afiliado,
-        'data_expiracao' =>  Carbon::now()->addDays(3),
+        'data_expiracao' =>  Carbon::now()->addDays(1),
         'password' => Hash::make($data['password']),
         ]);  
     }
