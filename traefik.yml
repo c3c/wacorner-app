@@ -45,7 +45,7 @@ services:
       - default
       - traefik-public
     deploy:
-        replicas: 1
+        replicas: 5
     depends_on:
       - traefik
       - consul-leader
