@@ -5,7 +5,7 @@ services:
       image: redis:alpine
       entrypoint: redis-server --appendonly yes
       networks:
-        - default
+        - traefik-default
         - traefik-public
       depends_on:
         - consul-leader
@@ -20,7 +20,7 @@ services:
   supervisor:
     image: wesleyvieira12/wacorner-supervisor:v3
     networks:
-      - default
+      - traefik-default
       - traefik-public
     deploy:
         replicas: 1
@@ -42,7 +42,7 @@ services:
   php-fpm:
     image: wesleyvieira12/wacorner-php-fpm:v8
     networks:
-      - default
+      - traefik-default
       - traefik-public
     deploy:
         replicas: 1
@@ -53,7 +53,7 @@ services:
   nginx:
     image: wesleyvieira12/wacorner-nginx:v1
     networks:
-      - default
+      - traefik-default
       - traefik-public
     deploy:
         replicas: 5
@@ -82,7 +82,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
-      - default
+      - traefik-default
       - traefik-public
     deploy:
       placement:
@@ -107,7 +107,7 @@ services:
       environment:
         - PMA_ARBITRARY=1
       networks:
-        - default
+        - traefik-default
         - traefik-public
       depends_on:
         - mysql
@@ -142,7 +142,7 @@ services:
       ports:
         - "3306:3306"
       networks:
-        - default
+        - traefik-default
         - traefik-public
       depends_on:
         - consul-leader
@@ -161,7 +161,7 @@ services:
       - CONSUL_BIND_INTERFACE=eth0
       - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
     networks:
-      - default
+      - traefik-default
       - traefik-public
     deploy:
       labels:
@@ -185,7 +185,7 @@ services:
       - CONSUL_BIND_INTERFACE=eth0
       - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
     networks:
-      - default
+      - traefik-default
       - traefik-public
     deploy:
       replicas: 3
@@ -240,7 +240,7 @@ services:
       --accessLog
       --api
     networks:
-      - default
+      - traefik-default
       - traefik-public
     depends_on:
       - consul-leader
@@ -253,5 +253,5 @@ volumes:
 networks:
   traefik-public:
     external: true
-  default:
-    attachable: true
+  traefik-default:
+    driver: overlay
