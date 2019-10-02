@@ -2,7 +2,7 @@ FROM phpdockerio/php72-fpm:latest
 
 RUN mkdir ~/application
 
-RUN apt-get update && apt-get install -y wget
+RUN apt-get update && apt-get install -y wget && apt-get install -y nginx
 
 ENV DOCKERIZE_VERSION v0.6.1
 
