@@ -40,15 +40,12 @@ services:
       - consul-leader
       - mysql
   php-fpm:
-    image: wesleyvieira12/wacorner-php-fpm:v7
+    image: wesleyvieira12/wacorner-php-fpm:v8
     networks:
       - default
       - traefik-public
     deploy:
-        replicas: 3
-        # placement:
-        #   constraints: 
-        #     - node.role == worker
+        replicas: 1
     depends_on:
       - traefik
       - consul-leader
@@ -59,7 +56,7 @@ services:
       - default
       - traefik-public
     deploy:
-        replicas: 3
+        replicas: 5
         # placement:
         #   constraints: 
         #     - node.role == worker
@@ -69,6 +66,7 @@ services:
             - traefik.port=80
             - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
             - traefik.docker.network=traefik-public
+            - traefik.backend.loadbalancer.stickiness=true
             # Traefik service that listens to HTTP
             - traefik.redirectorservice.frontend.entryPoints=http
             - traefik.redirectorservice.frontend.redirect.entryPoint=https
