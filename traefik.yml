@@ -40,7 +40,7 @@ services:
       - consul-leader
       - mysql
   php-fpm:
-    image: wesleyvieira12/wacorner-php-fpm:v8
+    image: wesleyvieira12/wacorner-php-fpm:v9
     networks:
       - traefik-default
       - traefik-public
