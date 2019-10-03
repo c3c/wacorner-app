@@ -33,7 +33,6 @@ services:
 ##################################################
     mysql:
       image: mysql:5.7
-      command: --innodb-use-native-aio=0
       container_name: mysql
       working_dir: /application
       restart: always
