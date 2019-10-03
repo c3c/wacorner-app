@@ -40,17 +40,6 @@ services:
       - consul-leader
       - mysql
   php-fpm:
-    image: wesleyvieira12/wacorner-php-fpm:v9
-    networks:
-      - traefik-default
-      - traefik-public
-    deploy:
-        replicas: 1
-    depends_on:
-      - traefik
-      - consul-leader
-      - mysql
-    php-fpm2:
     image: wesleyvieira12/wacorner-php-fpm:v10
     networks:
       - traefik-default
