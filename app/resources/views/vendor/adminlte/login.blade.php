@@ -61,7 +61,7 @@
                 </div>
             </form>
             <div class="auth-links">
-                <a href="{{ url(config('adminlte.password_reset_url', 'password/reset')) }}"
+                <a href="{{ route('admin.usuario.esqueci.senha') }}"
                    class="text-center"
                 >{{ trans('adminlte::adminlte.i_forgot_my_password') }}</a>
                 <br>

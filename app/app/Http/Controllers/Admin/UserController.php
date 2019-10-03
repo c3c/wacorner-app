@@ -79,4 +79,21 @@ class UserController extends Controller
 
         return $usuario;
     }
+
+    public function buscaCadastro(Request $request){
+        $usuario = User::where('email',$request->email)->where('telefone',$request->telefone)->first();
+        if ($usuario != null) {
+            return view('admin.usuario.novaSenha',compact('usuario'));
+        }else{
+            return back()->with('error','Dados inválidos!');
+        }
+    }
+
+    public function novaSenha(Request $request){
+        $usuario = User::find($request->id);
+        $usuario->password = bcrypt($request->password);
+        $usuario->save();
+
+        return back()->with('success','Senha alterada com sucesso!');
+    }
 }

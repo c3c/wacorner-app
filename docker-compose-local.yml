@@ -28,25 +28,26 @@ services:
         - app-network
       # depends_on:
       #   - "mysql"
-# ##################################################
-# #                 MYSQL                          #
-# ##################################################
-#     mysql:
-#       image: mysql:5.7
-#       container_name: mysql
-#       working_dir: /application
-#       restart: always
-#       volumes:
-#         - ./.docker/dbdata:/var/lib/mysql
-#       environment:
-#         - MYSQL_ROOT_PASSWORD=Moderador12@
-#         - MYSQL_DATABASE=wacorner_bd
-#         - MYSQL_USER=wacorner_user
-#         - MYSQL_PASSWORD=Moderador12@
-#       ports:
-#         - "3306:3306"
-#       networks:
-#         - app-network
+##################################################
+#                 MYSQL                          #
+##################################################
+    mysql:
+      image: mysql:5.7
+      command: --innodb-use-native-aio=0
+      container_name: mysql
+      working_dir: /application
+      restart: always
+      volumes:
+        - ./.docker/dbdata:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=Moderador12@
+        - MYSQL_DATABASE=wacorner_bd
+        - MYSQL_USER=wacorner_user
+        - MYSQL_PASSWORD=Moderador12@
+      ports:
+        - "3306:3306"
+      networks:
+        - app-network
 ##################################################
 #                 NGINX                          #
 ##################################################
@@ -57,6 +58,8 @@ services:
       container_name: nginx
       working_dir: /application
       restart: always
+      volumes:
+        - ./app:/application
       ports:
        - "80:80"
       links:
@@ -72,6 +75,8 @@ services:
         dockerfile: Dockerfile-supervisor
       container_name: supervisor
       working_dir: /application
+      volumes:
+        - ./app:/application
       restart: always
       # volumes:
       #   - ./application:/application
@@ -94,6 +99,8 @@ services:
         dockerfile: Dockerfile-php-fpm
       container_name: php-fpm
       working_dir: /application
+      volumes:
+        - ./app:/application
       restart: always
       networks:
         - app-network

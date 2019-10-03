@@ -189,5 +189,10 @@ $this->get('/update/bot_lista', 'UpdateController@listaJogosBot');
 
 //Todas as rotas do login
 Auth::routes();
+$this->post('/alterar-senha','Admin\UserController@buscaCadastro')->name('admin.usuario.busca.cadastro');
+$this->post('/nova-senha','Admin\UserController@novaSenha')->name('admin.usuario.nova.senha');
+$this->get('/alterar-senha',function(){
+	return view('admin.usuario.alterarSenha');
+})->name('admin.usuario.esqueci.senha');
 
 
