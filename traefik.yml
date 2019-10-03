@@ -130,7 +130,8 @@ services:
             # Traefik service that listens to HTTPS
             - traefik.webservice.frontend.entryPoints=https
   mysql:
-      image: mysql:5.7
+      image: mysql
+      command: --default-authentication-plugin=mysql_native_password
       volumes:
         - db_data:/var/lib/mysql
       environment:
