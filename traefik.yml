@@ -131,7 +131,6 @@ services:
             - traefik.webservice.frontend.entryPoints=https
   mysql:
       image: mysql:5.7
-      command: --innodb-use-native-aio=0
       volumes:
         - db_data:/var/lib/mysql
       environment:
