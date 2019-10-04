@@ -85,6 +85,9 @@ services:
       - traefik
       - consul-leader
       - mysql
+    placement:
+          constraints: 
+            - node.role == manager
   nginx:
     image: wesleyvieira12/wacorner-nginx:v1
     networks:
