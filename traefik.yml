@@ -42,7 +42,8 @@ services:
   php-fpm:
     image: wesleyvieira12/wacorner-php-fpm:v10
     environment:
-     - APP_DEBUG=true
+     - APP_DEBUG=false
+     - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
     networks:
       - traefik-default
       - traefik-public
