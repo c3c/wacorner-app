@@ -31,8 +31,8 @@ RUN chown -R www-data:www-data /application \
     /application/storage \
     /application/bootstrap/cache
 
-RUN chmod -R 775 storage/ & \
-    chmod -R 775 bootstrap/
+RUN chmod -R 777 storage/ & \
+    chmod -R 777 bootstrap/
 
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
