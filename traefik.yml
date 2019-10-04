@@ -41,6 +41,8 @@ services:
       - mysql
   php-fpm:
     image: wesleyvieira12/wacorner-php-fpm:v10
+    environment:
+     - APP_DEBUG=true
     networks:
       - traefik-default
       - traefik-public
