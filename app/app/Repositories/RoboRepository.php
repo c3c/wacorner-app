@@ -75,7 +75,7 @@ class RoboRepository
                                                             $query->where('users.admin','=',1)
                                                                 ->where('robos.status', '=', 1);
                                                         })
-                                                        ->pluck('robos.id'), 90 );
+                                                        ->pluck('robos.id'), 5 );
                 }
                
                 foreach($jogosDaApi->data as $jogoDaApi){
