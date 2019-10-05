@@ -75,7 +75,6 @@ class RoboRepository
                                                             $query->where('users.admin','=',1)
                                                                 ->where('robos.status', '=', 1);
                                                         })
-                                                        ->orWhere('users.admin','=',1)
                                                         ->pluck('robos.id'), 90 );
                 }
                
