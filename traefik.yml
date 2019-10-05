@@ -50,12 +50,15 @@ services:
           constraints: 
             - node.role == manager
   supervisor:
-    image: wesleyvieira12/wacorner-supervisor:v4
+    image: wesleyvieira12/wacorner-supervisor:v5
     networks:
       - traefik-default
       - traefik-public
     deploy:
         replicas: 1
+        # placement:
+        #   constraints: 
+        #     - node.role == manager
         labels:
             - traefik.frontend.rule=Host:supervisor.wacorner.com
             - traefik.enable=true
@@ -71,6 +74,7 @@ services:
       - traefik
       - consul-leader
       - mysql
+    
   php-fpm:
     image: wesleyvieira12/wacorner-php-fpm:v11
     environment:
