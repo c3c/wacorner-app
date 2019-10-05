@@ -65,12 +65,16 @@ class RoboRepository
                 $this->rodarRobos();
             
             } else {
-                if ( !Cache::has( 'robos-ativos' ) ) 
+                if ( !Cache::has( 'robos-ativos-wacorner' ) ) 
                 {
                     $data_hj = new Carbon(date('Y-m-d')); 
-                    Cache::put( 'robos-ativos', Robo::join('users','users.id','=','robos.user_id')
+                    Cache::put( 'robos-ativos-wacorner', Robo::join('users','users.id','=','robos.user_id')
                                                         ->where('robos.status', '=', 1)
                                                         ->where( 'users.data_expiracao','>=',$data_hj )
+                                                        ->orWhere(function ($query) {
+                                                            $query->where('users.admin','=',1)
+                                                                ->where('robos.status', '=', 1);
+                                                        })
                                                         ->orWhere('users.admin','=',1)
                                                         ->pluck('robos.id'), 90 );
                 }
@@ -105,7 +109,7 @@ class RoboRepository
                         $diferenca_gols = $jogoAoVivo->r_casa > $jogoAoVivo->r_fora ? ($jogoAoVivo->r_casa - $jogoAoVivo->r_fora) : ($jogoAoVivo->r_fora - $jogoAoVivo->r_casa);
                         
                         
-                        $robos_ativos = Cache::get( 'robos-ativos' );
+                        $robos_ativos = Cache::get( 'robos-ativos-wacorner' );
                         $robos = Robo::whereIn('id',$robos_ativos)
                             ->where('intervalo_inicio','<',intval($jogoAoVivo->tempo)+1)
                             ->where('intervalo_fim','>=',intval($jogoAoVivo->tempo))
