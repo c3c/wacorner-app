@@ -48,7 +48,7 @@ class RoboRepository
 
     public function rodarRobos()
     {
-        
+
         try{
 
             $dadosDaApi = $this->client->request( 'GET', "match/today?token=".$this->token_api.
@@ -65,16 +65,16 @@ class RoboRepository
                 $this->rodarRobos();
             
             } else {
-                if ( !Cache::has( 'robos-inativos' ) ) 
+                if ( !Cache::has( 'robos-ativos' ) ) 
                 {
                     $data_hj = new Carbon(date('Y-m-d')); 
-                    Cache::put( 'robos-inativos', Robo::join('users','users.id','=','robos.user_id')
-                                                        ->where( 'robos.status','=',0 )
-                                                        ->where( 'users.data_expiracao','<',$data_hj)
-                                                        ->where( 'users.admin','!=',1)
-                                                        ->select('robos.id')->get(), 90 );
+                    Cache::put( 'robos-ativos', Robo::join('users','users.id','=','robos.user_id')
+                                                        ->where('robos.status', '=', 1)
+                                                        ->where( 'users.data_expiracao','>=',$data_hj )
+                                                        ->orWhere('users.admin','=',1)
+                                                        ->pluck('robos.id'), 90 );
                 }
-                
+               
                 foreach($jogosDaApi->data as $jogoDaApi){
                     if ( !Cache::has( 'jogo_id_api'.$jogoDaApi->id ) ) 
                     {
@@ -105,8 +105,8 @@ class RoboRepository
                         $diferenca_gols = $jogoAoVivo->r_casa > $jogoAoVivo->r_fora ? ($jogoAoVivo->r_casa - $jogoAoVivo->r_fora) : ($jogoAoVivo->r_fora - $jogoAoVivo->r_casa);
                         
                         
-                        $robos_inativos = Cache::get( 'robos-inativos' );
-                        $robos = Robo::whereNotIn('id',$robos_inativos)
+                        $robos_ativos = Cache::get( 'robos-ativos' );
+                        $robos = Robo::whereIn('id',$robos_ativos)
                             ->where('intervalo_inicio','<',intval($jogoAoVivo->tempo)+1)
                             ->where('intervalo_fim','>=',intval($jogoAoVivo->tempo))
                             ->where('escanteios_min','<',$jogoAoVivo->c_casa+$jogoAoVivo->c_fora+1)
