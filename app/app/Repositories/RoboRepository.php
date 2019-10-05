@@ -48,6 +48,7 @@ class RoboRepository
 
     public function rodarRobos()
     {
+        
         try{
 
             $dadosDaApi = $this->client->request( 'GET', "match/today?token=".$this->token_api.
@@ -64,6 +65,16 @@ class RoboRepository
                 $this->rodarRobos();
             
             } else {
+                if ( !Cache::has( 'robos-inativos' ) ) 
+                {
+                    $data_hj = new Carbon(date('Y-m-d')); 
+                    Cache::put( 'robos-inativos', Robo::join('users','users.id','=','robos.user_id')
+                                                        ->where( 'robos.status','=',0 )
+                                                        ->where( 'users.data_expiracao','<',$data_hj)
+                                                        ->where( 'users.admin','!=',1)
+                                                        ->select('robos.id')->get(), 90 );
+                }
+                
                 foreach($jogosDaApi->data as $jogoDaApi){
                     if ( !Cache::has( 'jogo_id_api'.$jogoDaApi->id ) ) 
                     {
@@ -93,7 +104,9 @@ class RoboRepository
 
                         $diferenca_gols = $jogoAoVivo->r_casa > $jogoAoVivo->r_fora ? ($jogoAoVivo->r_casa - $jogoAoVivo->r_fora) : ($jogoAoVivo->r_fora - $jogoAoVivo->r_casa);
                         
-                        $robos = Robo::where('status','=',1)
+                        
+                        $robos_inativos = Cache::get( 'robos-inativos' );
+                        $robos = Robo::whereNotIn('id',$robos_inativos)
                             ->where('intervalo_inicio','<',intval($jogoAoVivo->tempo)+1)
                             ->where('intervalo_fim','>=',intval($jogoAoVivo->tempo))
                             ->where('escanteios_min','<',$jogoAoVivo->c_casa+$jogoAoVivo->c_fora+1)
@@ -103,10 +116,8 @@ class RoboRepository
                             ->get();
                         
                         foreach ($robos as $key => $robo) {
-                            if($robo->user->ativo()){
-                                if ( !Cache::has( 'jogo_id'.$jogo->id.'estrategia'.$robo->nome."_".$robo->user_id ) ) {                    
-                                    $this->analisar($jogoAoVivo,$robo,$diferenca_gols);
-                                }
+                            if ( !Cache::has( 'jogo_id'.$jogo->id.'estrategia'.$robo->nome."_".$robo->user_id ) ) {                    
+                                $this->analisar($jogoAoVivo,$robo,$diferenca_gols);
                             }
                         }
                     }
@@ -261,6 +272,6 @@ class RoboRepository
 
         Cache::add('jogo_id'.$live->jogo['id'].'estrategia'.$robo->nome."_".$robo->user_id,1,90);
 
-        echo "\njogo ENVIDADO ao BOT->".$robo->user->telegram_chat_id;
+        echo "\njogo ENVIDADO para->".$robo->user->email;
     }
 }
