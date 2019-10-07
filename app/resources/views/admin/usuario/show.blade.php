@@ -46,10 +46,13 @@
 			                  	<td>{{date('d/m/Y',strtotime($usuario->created_at))}}</td>
 			                  	<td>{{date('H:i',strtotime($usuario->created_at))}}</td>
 			                  	<td>
+
 			                  		<modal-link tipo="button" nome="add-dias" titulo="Add Dias" css="btn btn-success btn-xs" dado_id="{{$usuario->id}}"></modal-link>
 			                  		<a href="{{route('venda.show.user',['id'=>$usuario->id])}}" class="btn btn-info btn-xs">Vendas</a>
 			                  		<!-- <a href="{{route('usuario.plano',['email' => $usuario->email, 'plano' => 'basico'])}}" onclick="return confirm('Tem certeza que deseja adicionar um plano?')" class="btn btn-success btn-xs">Add Basico</a> -->
 			                  		<a href="{{route('usuario.plano',['email' => $usuario->email, 'plano' => 'profissional'])}}" onclick="return confirm('Tem certeza que deseja adicionar um plano?')" class="btn btn-success btn-xs">Add Profissional</a>
+			                  		<a href="{{route('usuario.perfil.id',['id' => $usuario->id])}}" class="btn btn-warning btn-xs">Editar perfil</a>
+			                  		<a href="{{route('usuario.excluir',['id' => $usuario->id])}}" onclick="return confirm('Tem certeza que deseja EXCLUIR conta?')" class="btn btn-danger btn-xs">Excluir conta</a>
 			                  	</td>
 			                  	
 			                </tr>

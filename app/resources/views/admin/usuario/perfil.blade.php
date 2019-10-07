@@ -13,42 +13,47 @@
 
 <div class="box">
     	<div class="box-header">
-    			<h3 class="box-title">Meu Perfil </h1>
+				@if(auth()->user()->admin != 1)
+    				<h3 class="box-title">Meu Perfil </h1>
+				@else
+					<h3 class="box-title">Perfil </h1>
+				@endif
     		<div class="box-body">
     			@include('admin.includes.alerts')
     			<form method="POST" action="{{route('usuario.perfil.update')}}">
+					<input type="hidden" name="id" value="{{$usuario->id}}">
     				<div class="form-group">
     					<label>Nome</label>
     					@csrf
-    					<input type="text" name="nome" class="form-control" value="{{auth()->user()->nome}}">
+    					<input type="text" name="nome" class="form-control" value="{{$usuario->nome}}">
     				</div>
     				<div class="form-group">
     					<label>Sobrenome</label>
-    					<input type="text" name="sobrenome" class="form-control" value="{{auth()->user()->sobrenome}}">
+    					<input type="text" name="sobrenome" class="form-control" value="{{$usuario->sobrenome}}">
     				</div>
     				<div class="form-group">
     					<label>E-mail</label>
-    					<input type="email" name="email" class="form-control" value="{{auth()->user()->email}}">
+    					<input type="email" name="email" class="form-control" value="{{$usuario->email}}">
     				</div>
     				<div class="form-group">
     					<label>CPF</label>
-    					<input type="text" name="cpf" maxlength="11" class="form-control" value="{{auth()->user()->cpf}}">
+    					<input type="text" name="cpf" maxlength="11" class="form-control" value="{{$usuario->cpf}}">
     				</div>
     				<div class="form-group">
     					<label>DDD</label>
-    					<input type="text" name="codigo_area" maxlength="3" class="form-control" value="{{auth()->user()->codigo_area}}">
+    					<input type="text" name="codigo_area" maxlength="3" class="form-control" value="{{$usuario->codigo_area}}">
     				</div>
     				<div class="form-group">
     					<label>Telefone</label>
-    					<input type="text" name="telefone" maxlength="11" class="form-control" value="{{auth()->user()->telefone}}">
+    					<input type="text" name="telefone" maxlength="11" class="form-control" value="{{$usuario->telefone}}">
     				</div>
                     <div class="form-group">
                         <label>Fuso Horário (Time zone)</label>
                         <select class="form-control" name="zona">
-                            @if(auth()->user()->zona !=null)
-                                <option value="{{auth()->user()->zona}}">Zona Atual: {{auth()->user()->zona}}</option>
+                            @if($usuario->zona !=null)
+                                <option value="{{$usuario->zona}}">Zona Atual: {{$usuario->zona}}</option>
                             @endif
-                            @foreach(auth()->user()->zonas() as $zona)
+                            @foreach($usuario->zonas() as $zona)
                                 <option value="{{explode('|',$zona)[0]}}">{{explode('|',$zona)[0]}}</option>
                             @endforeach
                         </select>

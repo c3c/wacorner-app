@@ -134,7 +134,9 @@ $this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin
 	$this->get('/venda/delete/{id}', 'VendaController@delete')->name('venda.delete');
 	$this->get('/venda/obrigado/{tipo}', 'VendaController@obrigado')->name('venda.obrigado');
 	
+	
 	$this->get('/usuario/perfil','UserController@perfil')->name('usuario.perfil');
+	$this->get('/usuario/perfil/{id}','UserController@perfil')->name('usuario.perfil.id');
 	$this->post('/usuario/update','UserController@perfilUpdate')->name('usuario.perfil.update');
 
 	//Descrição das estrategias
@@ -150,7 +152,7 @@ $this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin
 
 //SOMENTE ADMINISTRADORES
 $this->group(['middleware' => ['auth','is_admin','auth.unique.user'], 'namespace' => 'Admin','prefix'=>'admin'],function(){
-	
+	$this->get('/usuario/excluir/{id}','UserController@excluir')->name('usuario.excluir');
 	//VENDAS
 	$this->post('/venda/relatorio', 'VendaController@search')->name('venda.show.search');
 

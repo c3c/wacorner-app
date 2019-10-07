@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\User;
 
 class UpdatePerfilFormRequest extends FormRequest
 {
@@ -24,7 +25,6 @@ class UpdatePerfilFormRequest extends FormRequest
      */
     public function rules()
     {
-        $id = auth()->user()->id;
 
         return [
             'nome' => 'required|string|max:255',
@@ -34,14 +34,22 @@ class UpdatePerfilFormRequest extends FormRequest
                 'string',
                 'email',
                 'max:255',
-                Rule::unique('users')->ignore($id),
+                Rule::unique('users')->ignore($this->id),
             ],
             'codigo_area' =>'required|max:3',
             'telefone' =>'required|max:9',
-            'cpf' => [
-                'max:11',
-                Rule::unique('users')->ignore($id),
-            ], 
+            'cpf' =>[
+                function ($attribute, $value, $fail) {
+                    if($value != '' && $value != null){
+                        if(User::where('cpf',$value)->count()>0){
+                            $fail('Esse cpf já existe.');
+                        }else{
+                            if(strlen($value)!=11)
+                                $fail('CPF de conter 11 dígitos.');
+                        }
+                    }
+                }
+            ]
         ];
     }
 }

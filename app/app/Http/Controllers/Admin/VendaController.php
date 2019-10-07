@@ -382,18 +382,19 @@ class VendaController extends Controller
     public function delete($id){
         $venda = Venda::where('id',$id)->first();
         
-        $venda->user->cancelarRenovacao($venda);
+        if($venda->status == 'Paga'){
+            $venda->user->cancelarRenovacao($venda);
 
-        //REMOVER - COMISSÃO DO AFILIADO
-        if(isset($venda->user->user_id) && $venda->user->user_id != null){
-            $afiliado = User::find($venda->user->user_id);
-            if($afiliado != null){
-                $afiliado->removerSaldo($venda->valor*$this->comissao);
-            } 
+            //REMOVER - COMISSÃO DO AFILIADO
+            if(isset($venda->user->user_id) && $venda->user->user_id != null){
+                $afiliado = User::find($venda->user->user_id);
+                if($afiliado != null){
+                    $afiliado->removerSaldo($venda->valor*$this->comissao);
+                } 
+            }
         }
-
         $venda->delete();
-
+        
         return redirect()->route('venda.show');
     }
 

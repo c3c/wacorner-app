@@ -46,28 +46,33 @@ class UserController extends Controller
 
     
 
-    public function perfil(){
+    public function perfil($id = null){
 
-    	$usuario = auth()->user();
+        if($id == null)
+            $usuario = auth()->user();
+        else if(auth()->user()->admin == 1 && $id != null)
+            $usuario = User::find($id);
+        else 
+            $usuario = auth()->user();
+
     	return view('admin.usuario.perfil',compact('usuario'));
     }
 
-    public function perfilUpdate(UpdatePerfilFormRequest $request){    	
+    public function perfilUpdate(UpdatePerfilFormRequest $request){    
+        	
     	$data = $request->all();
     	if ($data['password'] != null)
     		$data['password'] = bcrypt($data['password']);
         else
             unset($data['password']);
         
-    	$update = auth()->user()->update($data);
+    	$update = User::find($data['id'])->update($data);
 
 		if ($update)
-			return redirect()
-				->route('usuario.perfil')
+			return back()
 				->with('success','Atualizado com sucesso!');
 		else
-			return redirect()
-				->route('usuario.perfil')
+			return back()
 				->with('error','Algum erro ocorreu, por favor entre em contato pelo email!!!');
 
     }
@@ -95,5 +100,12 @@ class UserController extends Controller
         $usuario->save();
 
         return back()->with('success','Senha alterada com sucesso!');
+    }
+
+    public function excluir($id){
+        $usuario = User::find($id);
+        $usuario->delete();
+
+        return back()->with('success','Conta excluida!');
     }
 }
