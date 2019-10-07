@@ -27,9 +27,9 @@
 		
 		@include('admin.includes.alerts')
 		<p><b>(*)</b>Campos obrigratórios caso esteja habilitado para preenchimento.</p>
-        @if($basico != true || $profissional != true)
+        @if($profissional != true)
 			<div class="col-md-6">
-                <form-paypal profissional="{{$profissional}}" url_obrigado_basico="{{route('venda.paypal.new',['plano' => 'basico'])}}" url_obrigado_profissional="{{route('venda.paypal.new',['plano' => 'profissional'])}}" email="{{auth()->user()->email}}"></form-paypal>
+                <form-paypal profissional="{{$profissional}}" url_obrigado_profissional="{{route('venda.paypal.new',['plano' => 'profissional'])}}" email="{{auth()->user()->email}}"></form-paypal>
 
 		    </div>
         @else
