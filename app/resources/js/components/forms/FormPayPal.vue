@@ -1,24 +1,20 @@
 <template>
 	<div>
 		 <div v-if='erro' class="alert alert-danger">
-                <p><span class="fa fa-thumbs-o-down"></span> {{erro}}</p>
+                <p>
+					<span class="fa fa-thumbs-o-down"></span> {{erro}}
+				</p>
         </div>
 		<div class="row">
 	        <div class="form-group">
 	            <label>Escolha seu país*:</label>
 	            <br>
-	            
-	                <input type="radio" v-model="pais" @click="limparValor" value="brasil" autocomplete="off" checked>  Brasil
-	             
-	            
-	                <input type="radio" v-model="pais" @click="limparValor" value="outro" autocomplete="off"> Outro País
-	             
-	            
+	            <input type="radio" v-model="pais" @click="limparValor" value="brasil" autocomplete="off" checked>  Brasil
+	            <input type="radio" v-model="pais" @click="limparValor" value="outro" autocomplete="off"> Outro País 
 	        </div>
 	    </div>
 		<div class="row ">
 			<div class="form-group">
-			    
 			    <label>Plano*</label>
 	            <select v-if="pais == 'brasil'"  class="form-control" v-model="plano" required>
 	                <option v-if="profissional == false" value="29.99">Profissional - R$29,99</option>
@@ -27,9 +23,7 @@
 			    	<option v-if="profissional == false" value="8">Profissional - $8</option>
 			    </select>
 		    </div>
-		 
 		</div>
-
 		<div class="row">
 			<div class="form-group">
 			    <label>Cupom de Desconto (opcional)</label>
@@ -40,11 +34,9 @@
 			    </div>
 			</div>
 		</div>
-
 		<h4><b>País:</b> {{pais.toLowerCase()}}</h4>
 		<h4 v-if="pais == 'brasil'"><b>Valor Plano:</b> {{total}} reais</h4>
 		<h4 v-if="pais != 'brasil'"><b>Valor Plano:</b> {{total}} dolares</h4>
-
 		<div id="paypal-button-container"></div>
 	</div>
 </template>
@@ -111,11 +103,7 @@
 			        return actions.payment.execute().then(function(data) {
 			            if(data.state == 'approved'){
 			                window.alert('Pagamento Aprovado, Plano será liberado logo em seguida!');
-			                if(valor_plano == 3 || valor_plano == 10){
-			                    window.location.href = vm.url_obrigado_basico;
-			                }else{
-			                    window.location.href = vm.url_obrigado_profissional;                    
-			                }
+			                window.location.href = vm.url_obrigado_profissional;                    
 			            }
 			            if(data.state == 'failed'){
 			                window.alert('Pagamento Falhou!');
@@ -129,7 +117,7 @@
 			}, '#paypal-button-container');
 
 		},
-		props:['basico','profissional','url_obrigado_basico','url_obrigado_profissional','email'],
+		props:[,'profissional','url_obrigado_profissional','email'],
 		data(){
 			return {
 				plano:'',

@@ -33,7 +33,7 @@ class PlanoLiberado extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
@@ -51,16 +51,14 @@ class PlanoLiberado extends Notification
             ->line('Após o termino do seu plano, você deve ir em NOVO PLANO, e adquirir outro para continuar utilizando o sistema, ou você pode adquirir antes do termino do seu plano, com isso será adicionado o numero de dias do novo plano.');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
+    public function toDatabase($notifiable)
     {
+        
         return [
-            //
+        'icone' => 'check',
+        'titulo' => 'Plano liberado',
+        'texto' => 'Seu plano '.$this->plano.' foi liberado!',
+        'url' => '#',
         ];
     }
 }

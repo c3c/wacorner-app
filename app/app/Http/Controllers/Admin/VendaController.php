@@ -73,11 +73,13 @@ class VendaController extends Controller
         $venda->user->envioLiberacaoPlano($venda->user,$venda->plano);
 
         //ADICIONAR - COMISSÃO DO AFILIADO
-        $afiliado = User::find($venda->user->user_id);
-        if($afiliado != null){
-            $afiliado->addSaldo($venda->valor,$this->comissao);
-            $afiliado->notify(new NovaCompra($venda));
-        } 
+        if(isset($venda->user->user_id) && $venda->user->user_id != null){
+            $afiliado = User::find($venda->user->user_id);
+            if($afiliado != null){
+                $afiliado->addSaldo($venda->valor,$this->comissao);
+                $afiliado->notify(new NovaCompra($venda));
+            } 
+        }
 
         return back()
                     ->with('success','Plano ativado. E admins notificados!');
@@ -130,15 +132,6 @@ class VendaController extends Controller
             return redirect()
                     ->route('venda.obrigado',['tipo' => 'PayPal']);
         }
-
-        $basico = auth()->user()->vendas()
-        ->where('tipo_pagamento','PayPal')
-        ->where('plano','basico')
-        ->where('status','pendente')->first();
-        if ($basico != null) 
-            $basico = true;
-        else
-            $basico = false;
 
         $profissional = auth()->user()->vendas()
         ->where('tipo_pagamento','PayPal')
@@ -272,10 +265,12 @@ class VendaController extends Controller
             $venda->user->cancelarRenovacao($venda_aux);
 
             //REMOVER - COMISSÃO DO AFILIADO
-            $afiliado = User::find($user->user_id);
-            if($afiliado != null){
-                if( $statusAnterior == 'Paga' ){
-                    $afiliado->removerSaldo($venda->valor*$this->comissao);
+            if(isset($user->user_id) && $user->user_id != null){
+                $afiliado = User::find($user->user_id);
+                if($afiliado != null){
+                    if( $statusAnterior == 'Paga' ){
+                        $afiliado->removerSaldo($venda->valor*$this->comissao);
+                    }
                 }
             } 
         }
@@ -386,17 +381,19 @@ class VendaController extends Controller
 
     public function delete($id){
         $venda = Venda::where('id',$id)->first();
-        if($venda->tipo_pagamento == "Transferência"){
-            $venda->user->cancelarRenovacao($venda);
+        
+        $venda->user->cancelarRenovacao($venda);
 
-            //REMOVER - COMISSÃO DO AFILIADO
+        //REMOVER - COMISSÃO DO AFILIADO
+        if(isset($venda->user->user_id) && $venda->user->user_id != null){
             $afiliado = User::find($venda->user->user_id);
             if($afiliado != null){
                 $afiliado->removerSaldo($venda->valor*$this->comissao);
             } 
-
         }
+
         $venda->delete();
+
         return redirect()->route('venda.show');
     }
 
