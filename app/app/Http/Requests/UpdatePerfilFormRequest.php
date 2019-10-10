@@ -25,7 +25,7 @@ class UpdatePerfilFormRequest extends FormRequest
      */
     public function rules()
     {
-
+       
         return [
             'nome' => 'required|string|max:255',
             'sobrenome' => 'required|string|max:255',
@@ -41,7 +41,7 @@ class UpdatePerfilFormRequest extends FormRequest
             'cpf' =>[
                 function ($attribute, $value, $fail) {
                     if($value != '' && $value != null){
-                        if(User::where('cpf',$value)->count()>0){
+                        if(User::where('cpf',$value)->where('id','!=',$this->id)->count()>0){
                             $fail('Esse cpf já existe.');
                         }else{
                             if(strlen($value)!=11)
