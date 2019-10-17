@@ -3,7 +3,7 @@
 	<li class="dropdown messages-menu">
 	    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
 	      <i class="fa fa-bell-o"></i>
-	      <span class="label label-warning">{{notifications.length}}</span>
+	      <span v-if="notifications.length>0" class="label label-warning">{{notifications.length}}</span>
 	    </a>
 	    <ul class="dropdown-menu">
 	     

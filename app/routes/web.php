@@ -47,6 +47,7 @@ $this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' =
 	$this->get('/robos/{nome}/create','RoboController@create')->name('robos.create.nome');
 	$this->get('/robos/jogos/notificados','RoboController@notificacoes')->name('robos.notificacoes');
 	$this->get('/robos/{id}/desconectar','RoboController@desconectar')->name('robos.desconectar');
+	$this->get('/robos/{id}/data/{data}','RoboController@sendListRobo')->name('robos.send.list');
 	$this->get('/robos/jogos/notificados/delete/all','RoboController@excluirTodasNotificacoes')->name('robos.notificacoes.delete.all');
 	$this->get('/robos/jogos/notificados/delete/{id}','RoboController@excluirNotificacao')->name('robos.notificacoes.delete.id');
 	

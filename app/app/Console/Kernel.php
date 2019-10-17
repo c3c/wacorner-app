@@ -30,6 +30,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('update:tudo')->everyThirtyMinutes();
+        // $schedule->command('update:tudo')->everyFiveMinutes();
         $schedule->command('analises:calcular')->hourly();
     }
 

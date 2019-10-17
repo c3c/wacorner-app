@@ -123,23 +123,22 @@
     
    @if(auth()->check())
 
-        <link rel="manifest" href="{{asset('manifest.json')}}" />
+        
         <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
         <script>
-          var OneSignal = window.OneSignal || [];
-          OneSignal.push(function() {
-            OneSignal.init({
-              appId: "2ccc08ae-7390-447e-bce0-28033434f4bf",
-            });
-
-            OneSignal.sendTags({
+            var OneSignal = window.OneSignal || [];
+            OneSignal.push(function() {
+                OneSignal.init({
+                appId: "b06b3bcb-8483-47e8-8537-a9e9b022909d",
+                });
+                OneSignal.sendTags({
                 user_id: window.Laravel.user,
-              }).then(function(tagsSent) {
-                
-                console.log(tagsSent);   
-              });
-          });
-        </script>    
+                }).then(function(tagsSent) {
+                    
+                    console.log("Usuario logado ao OneSignal!");   
+                });
+            });
+        </script>
           
     @endif
 </head>

@@ -8,7 +8,7 @@ return array (
      | You can find in : Project > Settings > Key & ID's > ONESIGNAL APP ID
      |
      */
-    'app_id' => env("ONESIGNAL_APP_ID", '2ccc08ae-7390-447e-bce0-28033434f4bf'),
+    'app_id' => env("ONESIGNAL_APP_ID", 'b06b3bcb-8483-47e8-8537-a9e9b022909d'),
 
     /*
      |--------------------------------------------------------------------------
@@ -18,7 +18,7 @@ return array (
      | You can find in : Project > Settings > Key & ID's > REST API KEY
      |
      */
-    'rest_api_key' => env("ONESIGNAL_REST_API_KEY", 'YzFlMzEyODktZDhkMC00OGJjLWFhNTgtNWMwNDFjNzUxYWM2'),
+    'rest_api_key' => env("ONESIGNAL_REST_API_KEY", 'ZDNiNDY0MzAtN2JmNi00MWZiLThiMzgtM2U0M2JhOGFhMjQ0'),
 
     /*
      |--------------------------------------------------------------------------

@@ -14,7 +14,7 @@ use App\Lista;
 class Jogo extends Model
 {
 	protected $fillable = [
-        'id_api','start', 'n_jogos_casa', 'n_jogos_fora', 
+        'id_api','start', 'n_jogos_casa', 'n_jogos_fora', 'favorito','super_favorito', 
         'ht35', 
         'ht35_casa',
         'ht35_fora',

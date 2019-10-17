@@ -113,8 +113,6 @@ class RoboRepository
                             ->where('intervalo_inicio','<',intval($jogoAoVivo->tempo)+1)
                             ->where('intervalo_fim','>=',intval($jogoAoVivo->tempo))
                             ->where('escanteios_min','<',$jogoAoVivo->c_casa+$jogoAoVivo->c_fora+1)
-                            ->where('qtd_min_jogos_casa','<',$jogoAoVivo->jogo['n_jogos_casa']+1)
-                            ->where('qtd_min_jogos_fora','<',$jogoAoVivo->jogo['n_jogos_fora']+1)
                             ->where('diferenca_gols','>=',$diferenca_gols)
                             ->get();
                         
@@ -135,57 +133,83 @@ class RoboRepository
         }
     }
 
-    public function analisar($live,$robo,$diferenca_gols)
-    {                       
+    private function tipoDeJogo($jogo){
+        if($jogo['favorito'] != null || $jogo['super_favorito'] != null){
+            return 'f-s';
+        }else{
+            return 'jogo-parelho';
+        }
+    }
+
+    private function analise_pre($jogo,$robo){
         $estrategia = strtolower($robo->nome);
-               
-        if($live->jogo[$estrategia] >= $robo->porcentagem_min_total){
-            if($live->jogo[$estrategia.'_casa'] >= $robo->porcentagem_min_casa){
-                if($live->jogo[$estrategia.'_fora'] >= $robo->porcentagem_min_fora){
-                    $situacao_jogo = $this->situacao($live,$diferenca_gols);
-                    if(strpos($robo->situacao,$situacao_jogo) !== false){
-                        $menor_odd = $live->odds[0] <= $live->odds[2] ? 'casa' : 'fora';
-                        $maior_odd = $live->odds[0] > $live->odds[2] ? 'casa' : 'fora';
-                        $difenca_odds = $live->odds[0] > $live->odds[2] ? ($live->odds[0] - $live->odds[2]) : ($live->odds[2] - $live->odds[0]);
-                        if($robo->situacao == 'jogo-parelho' && $situacao_jogo == 'jogo-parelho'){
-                            $jogo = Jogo::find($live->jogo['id']);
-                            if($jogo != null){
-                                if($robo->user->telegram_chat_id != null){
-                                    $this->enviarMensagemBot($robo,$menor_odd,strtolower($robo->nome),$live,$difenca_odds,$live->superioridade);
+        if( strpos($robo->situacao,$this->tipoDeJogo($jogo)) !== false ){
+            if($jogo['n_jogos_casa'] >= $robo->qtd_min_jogos_casa){
+                if($jogo['n_jogos_casa'] >= $robo->qtd_min_jogos_casa){
+                    if($jogo[$estrategia] >= $robo->porcentagem_min_total){
+                        if($jogo[$estrategia.'_casa'] >= $robo->porcentagem_min_casa){
+                            if($jogo[$estrategia.'_fora'] >= $robo->porcentagem_min_fora){
+                                if($robo->situacao == 'jogo-parelho'){
                                     return true;
-                                }
-                            }
-                        }else{
-                            if($situacao_jogo != 'g' && $situacao_jogo != 'jogo-parelho' && $robo->situacao != 'jogo-parelho'){
-                                if($menor_odd == $live->superioridade[1]){
-                                    if($live->superioridade[0] >= $robo->superioridade){
-                                        if($live->jogo[$estrategia."_media_favor_".$menor_odd] >= $robo->media_favor_estrategia_favorito){
-                                            if($live->jogo[$estrategia."_media_contra_".$menor_odd] >= $robo->media_contra_estrategia_favorito){
-                                                if($live->jogo[$estrategia."_media_favor_".$maior_odd] >= $robo->media_favor_estrategia_zebra){
-                                                    if($live->jogo[$estrategia."_media_contra_".$maior_odd] >= $robo->media_contra_estrategia_zebra){
-                                                        if(($live->jogo[$estrategia."_media_favor_".$maior_odd] +$live->jogo[$estrategia."_media_contra_".$maior_odd]) >= $robo->media_total_estrategia_zebra){
-                                                            if(($live->jogo[$estrategia."_media_favor_".$menor_odd] +$live->jogo[$estrategia."_media_contra_".$menor_odd]) >= $robo->media_total_estrategia_favorito){
-                                                                $jogo = Jogo::find($live->jogo['id']);
-                                                                if($jogo != null){
-                                                                    if($robo->user->telegram_chat_id != null){
-                                                                        $this->enviarMensagemBot($robo,$menor_odd,strtolower($robo->nome),$live,$difenca_odds,$live->superioridade); 
-                                                                        return true;
-                                                                    }
-                                                                }
-                                                            }
+                                }else{
+                                    $favorito = $jogo['favorito'] != null ? $jogo['favorito'] : $jogo['super_favorito'];
+                                    $zebra = $favorito == 'casa' ? 'fora' : 'casa';
+                                    if($jogo[$estrategia."_media_favor_".$favorito] >= $robo->media_favor_estrategia_favorito){
+                                        if($jogo[$estrategia."_media_contra_".$favorito] >= $robo->media_contra_estrategia_favorito){
+                                            if($jogo[$estrategia."_media_favor_".$zebra] >= $robo->media_favor_estrategia_zebra){
+                                                if($jogo[$estrategia."_media_contra_".$zebra] >= $robo->media_contra_estrategia_zebra){
+                                                    if(($jogo[$estrategia."_media_favor_".$zebra] +$jogo[$estrategia."_media_contra_".$zebra]) >= $robo->media_total_estrategia_zebra){
+                                                        if(($jogo[$estrategia."_media_favor_".$favorito] +$jogo[$estrategia."_media_contra_".$favorito]) >= $robo->media_total_estrategia_favorito){
+                                                            return true;
                                                         }
                                                     }
-                                                } 
-                                            }  
-                                        }   
-                                        
+                                                }
+                                            }
+                                        }
                                     }
                                 }
-                            } 
+                            }
                         }
                     }
-                }  
-            } 
+                }
+            }
+        }
+        return false;
+    }
+    public function analisar($live,$robo,$diferenca_gols)
+    {                       
+        
+        if($this->analise_pre($live->jogo,$robo) == true){
+
+            $situacao_jogo = $this->situacao($live,$diferenca_gols);
+            if(strpos($robo->situacao,$situacao_jogo) !== false){
+                $menor_odd = $live->odds[0] <= $live->odds[2] ? 'casa' : 'fora';
+                $difenca_odds = $live->odds[0] > $live->odds[2] ? ($live->odds[0] - $live->odds[2]) : ($live->odds[2] - $live->odds[0]);
+                if($situacao_jogo == 'jogo-parelho'){
+                    $jogo = Jogo::find($live->jogo['id']);
+                    if($jogo != null){
+                        if($robo->user->telegram_chat_id != null){
+                            $this->enviarMensagemBot($robo,$menor_odd,strtolower($robo->nome),$live,$difenca_odds,$live->superioridade);
+                            return true;
+                        }
+                    }
+                }else{
+                    if($situacao_jogo != 'g' && $situacao_jogo != 'jogo-parelho'){
+                        if($menor_odd == $live->superioridade[1]){
+                            if($live->superioridade[0] >= $robo->superioridade){
+                                
+                                    $jogo = Jogo::find($live->jogo['id']);
+                                    if($jogo != null){
+                                        if($robo->user->telegram_chat_id != null){
+                                            $this->enviarMensagemBot($robo,$menor_odd,strtolower($robo->nome),$live,$difenca_odds,$live->superioridade); 
+                                            return true;
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                } 
+            }  
         }
         return true;
     }
@@ -276,5 +300,59 @@ class RoboRepository
         Cache::add('jogo_id'.$live->jogo['id'].'estrategia'.$robo->nome."_".$robo->user_id,1,90);
 
         echo "\njogo ENVIDADO para->".$robo->user->email;
+    }
+
+    public function sendListPre($robo,$data){
+        $jogos = Jogo::where( 'start', 'like', '%'.date( 'Y-m-d', strtotime($data) ).'%' )
+                            ->get();
+        $texto_inicial = "\n*Lista de possiveis jogos do robo ".strtoupper($robo->nome)."* ";
+        $texto_inicial .= "\n*Data: ".date( 'd/m/Y', strtotime($data) )."*\n";
+        $texto_inicial .= "--------------------------------------\n\n";
+        $n = 0;
+        $total_jogos = 0;
+        $texto = "";
+        foreach($jogos as $jogo){
+            
+            $jogo = $jogo->load( 'liga', 'time_casa', 'time_fora' )->toArray();
+            if($this->analise_pre($jogo,$robo)){
+                
+                $total_jogos += 1;
+                $n += 1;
+                if($jogo['favorito'] == null && $jogo['super_favorito'] == null){
+                    $texto .= "⏰ ".date( 'H:i', strtotime($jogo['start']) )." - ".$jogo['time_casa']['nome']." x ".$jogo['time_fora']['nome'];
+                }else{
+                    $favorito = $jogo['favorito'] != null ? 'F' : 'S';
+                    if($jogo['favorito'] == 'casa' || $jogo['super_favorito'] == 'casa'){
+                        $texto .= "⏰ ".date( 'H:i', strtotime($jogo['start']) )." - ".$jogo['time_casa']['nome']." *(".$favorito.")* x ".$jogo['time_fora']['nome'];
+                    }else{
+                        $texto .= "⏰ ".date( 'H:i', strtotime($jogo['start']) )." - ".$jogo['time_casa']['nome']." x ".$jogo['time_fora']['nome']." *(".$favorito.")*";
+                    }
+                }
+                $texto .= "\n--------------------------------------\n";
+            }
+            
+            if($n >= 10){
+                $robo->user->sendMenssageTelegram(
+                    $robo->user->telegram_chat_id,
+                    $texto_inicial.$texto
+                );
+                $n = 0;
+                $texto = "";
+            }
+        }
+     
+        if($n != 0){
+            $robo->user->sendMenssageTelegram(
+                $robo->user->telegram_chat_id,
+                $texto_inicial.$texto
+            );
+        }
+        //FT75 -> '-1001231370685'
+        //FT82 -> '-1001175360624.0'
+        if($total_jogos != 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

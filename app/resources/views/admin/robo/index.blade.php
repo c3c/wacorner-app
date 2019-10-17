@@ -35,6 +35,8 @@
 								<td>
 									<a href="{{route('robos.alterar.status',['id' => $robo->id])}}" class="btn btn-danger">Desativar</a>
 									<a href="{{route('robos.edit',['id' => $robo->id])}}" class="btn btn-warning">Configurar</a>
+									<a href="{{route('robos.send.list',['id' => $robo->id,'data' => date('Y-m-d')])}}" class="btn btn-info">Lista de hoje</a>
+									<a href="{{route('robos.send.list',['id' => $robo->id,'data' => date('Y-m-d', strtotime('+1 days')) ])}}" class="btn btn-info">Lista de amanhã</a>
 								</td>		
 							@endif
 						</tr>

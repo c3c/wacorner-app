@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Robo;
+use App\Repositories\RoboRepository;
 use App\User;
 use App\Models\JogoNotificado;
 
@@ -178,5 +179,16 @@ class RoboController extends Controller
 		$user->save();
 
 		return back()->with('success', "Desconectado!");
-	}
+    }
+    
+    public function sendListRobo($id,$data){
+        $robo = Robo::findOrFail($id);
+        $roboRepository = new RoboRepository();
+
+        if($roboRepository->sendListPre($robo,$data)){
+            return back()->with('success',"Lista enviada!!!");
+        }else{
+            return back()->with('error',"Nenhum jogo foi encontrado para esse robo!");
+        }
+    }
 }

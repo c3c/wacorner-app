@@ -176,13 +176,24 @@ class UpdateRepository
 
     }
 
+    private function tipo($odd){
+
+        if($odd <= 1){
+            return null;
+        }else if($odd > 1 && $odd<=3){
+            return 'F';
+        }else{
+            return 'S';
+        }
+    }
+
     public function buscarDadosAPI( $pagina = null, $numeroDeRequisicoes = 1 ){
         echo $numeroDeRequisicoes;
         $pagina = $pagina != null ? $pagina : $this->ultimaPaginaBuscada();
         $data = $this->ultimaDataBuscada();
         $dadosDaApi = $this->client->request( 'GET', "match/schedule?token=".$this->token_api.
                                                 "&date=".$data.
-                                                "&columns=events,cornerLine&page=".$pagina );
+                                                "&columns=events,odds,cornerLine&page=".$pagina );
         if( $numeroDeRequisicoes < 6 ){
             
             $numeroDeRequisicoes += 1 ;    
@@ -203,9 +214,9 @@ class UpdateRepository
                         $dataDoJogo->setTimeZone( 'America/Fortaleza' );
                         $dataAuxiliarDoJogo = $dataDoJogo; 
                         $dataAuxiliarDoJogo = $dataAuxiliarDoJogo->format( 'd/m/Y H:m' );
-
-                        $this->roboOportunidade( $jogoDaApi, $dataAuxiliarDoJogo );
-
+                        if(env('APP_DEBUG') == false){
+                            $this->roboOportunidade( $jogoDaApi, $dataAuxiliarDoJogo );
+                        }
                         $liga = Liga::updateOrCreate(
                             ['l' => $jogoDaApi->l],
                             ['l_id' => "".$jogoDaApi->l_id]
@@ -249,6 +260,17 @@ class UpdateRepository
                             ]);
                             
                         }
+                        
+                        $difenca_po_odds = $jogoDaApi->po_odds[0] > $jogoDaApi->po_odds[2] ? ($jogoDaApi->po_odds[0] - $jogoDaApi->po_odds[2]) : ($jogoDaApi->po_odds[2] - $jogoDaApi->po_odds[0]);
+                        $tipo = $this->tipo($difenca_po_odds);
+                        if( $tipo != null ) {
+                            $menor_odd = $jogoDaApi->po_odds[0] <= $jogoDaApi->po_odds[2] ? 'casa' : 'fora';
+                            if( $tipo == 'F' ) {
+                                $jogoCadastrado->favorito = $menor_odd;
+                            }else{
+                                $jogoCadastrado->super_favorito = $menor_odd;
+                            }
+                        }
 
                         $jogoCadastrado->id_api = $jogoDaApi->id;
                         $jogoCadastrado->save(); 
@@ -282,8 +304,6 @@ class UpdateRepository
             return false;
         }
     }
-
-    
 
     public function buscarDadosDeJogosAoVivoAPI( $pagina = 1, $jogosAoVivo = null ){
         
