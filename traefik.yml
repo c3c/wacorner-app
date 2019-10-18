@@ -50,7 +50,7 @@ services:
           constraints: 
             - node.role == manager
   supervisor:
-    image: wesleyvieira12/wacorner-supervisor:v6
+    image: wesleyvieira12/wacorner-supervisor:v7
     networks:
       - traefik-default
       - traefik-public
