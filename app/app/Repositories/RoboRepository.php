@@ -92,7 +92,7 @@ class RoboRepository
                         $jogoAoVivo                     = new Live();
                         $jogoAoVivo->jogo               = $jogo->load( 'liga', 'time_casa', 'time_fora' )
                                                                 ->toArray();
-                        if(isset($jogosDaApi->status)){
+                        if(isset($jogoDaApi->status)){
                             $jogoAoVivo->tempo = $jogoDaApi->status != 'half' ? $jogoDaApi->status : 45;
                         }else{
                             $jogoAoVivo->tempo = 0;
