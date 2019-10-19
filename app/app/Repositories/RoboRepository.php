@@ -308,6 +308,7 @@ class RoboRepository
 
     public function sendListPre($robo,$data){
         $jogos = Jogo::where( 'start', 'like', '%'.date( 'Y-m-d', strtotime($data) ).'%' )
+                            ->orderBy('start','asc')
                             ->get();
         $texto_inicial = "\n*Lista de possiveis jogos do robo ".strtoupper($robo->nome)."* ";
         $texto_inicial .= "\n*Data: ".date( 'd/m/Y', strtotime($data) )."*\n";
@@ -335,21 +336,37 @@ class RoboRepository
                 $texto .= "\n--------------------------------------\n";
             }
             
-            if($n >= 10){
-                $robo->user->sendMenssageTelegram(
-                    $robo->user->telegram_chat_id,
-                    $texto_inicial.$texto
-                );
+            if($n >= 15){
+                if($total_jogos>=30){
+                    $robo->user->sendMenssageTelegram(
+                        $robo->user->telegram_chat_id,
+                        $texto
+                    );
+                }else{
+                    $robo->user->sendMenssageTelegram(
+                        $robo->user->telegram_chat_id,
+                        $texto_inicial.$texto
+                    );
+                }
+                sleep(1);
                 $n = 0;
                 $texto = "";
             }
         }
      
         if($n != 0){
-            $robo->user->sendMenssageTelegram(
-                $robo->user->telegram_chat_id,
-                $texto_inicial.$texto
-            );
+            if($total_jogos >= 15){
+                $robo->user->sendMenssageTelegram(
+                    $robo->user->telegram_chat_id,
+                    $texto
+                );
+            }else{
+                $robo->user->sendMenssageTelegram(
+                    $robo->user->telegram_chat_id,
+                    $texto_inicial.$texto
+                );
+            }
+            sleep(1);
         }
         //FT75 -> '-1001231370685'
         //FT82 -> '-1001175360624.0'
