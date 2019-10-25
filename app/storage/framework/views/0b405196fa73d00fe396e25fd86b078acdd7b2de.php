@@ -117,7 +117,7 @@
                         <div class="item-content-inner">
                             
                             <h2 class="heading">Venha conhecer nosso sistema</h2>
-                            <p class="intro">Teste por 3 dias gratuitamente.</p>
+                            <p class="intro">Teste por 1 dia gratuitamente.</p>
                             <a class="btn btn-primary btn-cta" href="#pricing">Registrar-se</a>
                             
                         </div><!--//item-content-inner-->
@@ -302,7 +302,7 @@
                         </div><!--//price-figure-->
                         <ul class="list-unstyled mb-3">
                             <li class="mb-2"><i class="fa fa-check"></i> Tudo liberado</li>
-                            <li class="mb-2"><i class="fa fa-calendar"></i> Válido por 3 dias</li>
+                            <li class="mb-2"><i class="fa fa-calendar"></i> Válido por 1 dia</li>
                         </ul>
                         
                         <a class="btn btn-cta" href="<?php echo e(route('venda')); ?>">Adquirir</a>

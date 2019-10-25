@@ -17,7 +17,7 @@ class Ativo
     {
         $usuario = auth()->user();
 
-        if($usuario->ativo() && $usuario->validarEmail()) {
+        if( $usuario->ativo() ) {
             return $next($request);
         }
         return redirect('admin/venda/expirado');

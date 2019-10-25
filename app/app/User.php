@@ -157,10 +157,6 @@ class User extends Authenticatable
             return false;
     }
 
-    public function validarEmail(){
-        return checkdnsrr(explode("@", $this->email)[1])? true : false;
-    }
-
     public function renovacao($plano = null,$dias = null){
 
         $data_expiracao = new Carbon($this->data_expiracao);
