@@ -184,6 +184,8 @@ services:
         - MYSQL_DATABASE=wacorner_bd
         - MYSQL_USER=wacorner_user
         - MYSQL_PASSWORD=Moderador12@
+        - CACHE_DRIVER=file
+        - SESSION_DRIVER=file
       ports:
         - "3306:3306"
       networks:
