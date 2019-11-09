@@ -58,7 +58,7 @@ services:
       - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
       - LOG_LEVEL=debug
       - TELESCOPE_ENABLED=false
-      - CACHE_DRIVER=file
+      - CACHE_DRIVER=redis
       - SESSION_DRIVER=file
     deploy:
         replicas: 1
@@ -88,7 +88,7 @@ services:
      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
      - LOG_LEVEL=debug
      - TELESCOPE_ENABLED=false
-     - CACHE_DRIVER=file
+     - CACHE_DRIVER=redis
      - SESSION_DRIVER=file
     networks:
       - traefik-default
