@@ -54,6 +54,13 @@ services:
     networks:
       - traefik-default
       - traefik-public
+    environment:
+      - APP_DEBUG=false
+      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+      - LOG_LEVEL=debug
+      - TELESCOPE_ENABLED=false
+      - CACHE_DRIVER=file
+      - SESSION_DRIVER=file
     deploy:
         replicas: 1
         # placement:
@@ -82,6 +89,8 @@ services:
      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
      - LOG_LEVEL=debug
      - TELESCOPE_ENABLED=false
+     - CACHE_DRIVER=file
+     - SESSION_DRIVER=file
     networks:
       - traefik-default
       - traefik-public
@@ -184,8 +193,6 @@ services:
         - MYSQL_DATABASE=wacorner_bd
         - MYSQL_USER=wacorner_user
         - MYSQL_PASSWORD=Moderador12@
-        - CACHE_DRIVER=file
-        - SESSION_DRIVER=file
       ports:
         - "3306:3306"
       networks:
