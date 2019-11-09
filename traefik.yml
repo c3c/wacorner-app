@@ -35,7 +35,7 @@ services:
       - mysql
   redis:
       image: redis:alpine
-      expose:
+      ports:
         - "6379"
       networks:
         - traefik-default
