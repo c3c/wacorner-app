@@ -179,9 +179,9 @@ class User extends Authenticatable
         } else {
             if ($this->ativo())
             {
-                $this->data_expiracao = $data_expiracao->addDays($dias);
+                $this->data_expiracao = $data_expiracao->addDays($dias)->format('Y-m-d');
             } else {
-                $this->data_expiracao = Carbon::now()->addDays($dias); 
+                $this->data_expiracao = Carbon::now()->addDays($dias)->format('Y-m-d'); 
             }
         }
         

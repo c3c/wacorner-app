@@ -113,6 +113,7 @@ $this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin
 	//INDICADOS
 	$this->get('/indicados/','IndicadoController@index')->name('indicados');
 	$this->get('/indicados/{id}','IndicadoController@show')->name('indicados.show');
+	$this->get('/indicados/{id}/converter-dias','IndicadoController@converterDias')->name('indicados.converter.dias');
 	
 
 	//CUPONS DOS USUARIOS PARCEIROS
