@@ -16,12 +16,9 @@
 	<div class="box-body">
 		@include('admin.includes.alerts')    			
 		<h4>Total pago: <span class="badge bg-green">R$ {{$total}}</span> | Meu Saldo Agora: <span class="badge bg-blue">R$ {{$user->saldo}}</span></h4>
-		@if($user->saldo >= 100 )
 		  <!-- Button trigger modal -->
 			<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#exampleModal"> <i class="fa fa-usd"></i> Novo Saque
 			</button>
-
-		@endif
 		<table class="table table-striped">
             <tbody>
             	<tr>
