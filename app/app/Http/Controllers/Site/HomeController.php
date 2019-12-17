@@ -16,7 +16,7 @@ class HomeController extends Controller
         if($id != null){
             //salva no navegador por 30 dias
             
-           setcookie('afiliado_id',$id,time()+60*60*24*30,'/');
+        //    setcookie('afiliado_id',$id,time()+60*60*24*30,'/');
            
         }
 

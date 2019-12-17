@@ -90,12 +90,12 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 
-        if(isset($_COOKIE['afiliado_id'])){
-            $afiliado = $_COOKIE['afiliado_id'];
+        // if(isset($_COOKIE['afiliado_id'])){
+        //     $afiliado = $_COOKIE['afiliado_id'];
 
-        }else{
+        // }else{
             $afiliado = null;
-        }
+        // }
         
         return User::create([
         'nome' => $data['nome'],
