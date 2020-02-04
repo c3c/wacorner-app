@@ -62,7 +62,7 @@ class User extends Authenticatable
         } catch (TelegramResponseException $e) {
 
             $usuario = User::where('telegram_chat_id',''.$chat_id)->first();
-            $usuario->telegram_chat_id = null;
+            $usuario->telegram_chat_id = '';
             $usuario->save();
 
             return false;
