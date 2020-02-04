@@ -68,14 +68,14 @@ class RoboRepository
                 if ( !Cache::has( 'robos-ativos-wacorner' ) ) 
                 {
                     $data_hj = new Carbon(date('Y-m-d')); 
-                    Cache::put( 'robos-ativos-wacorner', Robo::join('users','users.id','=','robos.user_id')
-                                                        ->where('robos.status', '=', 1)
-                                                        ->where( 'users.data_expiracao','>=',$data_hj )
-                                                        ->orWhere(function ($query) {
-                                                            $query->where('users.admin','=',1)
-                                                                ->where('robos.status', '=', 1);
-                                                        })
-                                                        ->pluck('robos.id'), 5 );
+                    $robos = Robo::where('status','=','1')->get();
+                    $robos_ativos = array();
+                    foreach($robos as $robo){
+                        if($robo->user->ativo()){
+                            array_push($robos_ativos,$robo->id);
+                        }
+                    }
+                    Cache::put( 'robos-ativos-wacorner', $robos_ativos, 5 );
                 }
                
                 foreach($jogosDaApi->data as $jogoDaApi){

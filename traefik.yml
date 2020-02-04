@@ -84,7 +84,7 @@ services:
   php-fpm:
     image: wesleyvieira12/wacorner-php-fpm:v18
     environment:
-     - APP_DEBUG=false
+     - APP_DEBUG=true
      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
      - LOG_LEVEL=debug
      - TELESCOPE_ENABLED=false
