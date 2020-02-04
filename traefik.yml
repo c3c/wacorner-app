@@ -156,7 +156,7 @@ services:
       - traefik
       - consul-leader
   phpmyadmin:
-      image: phpmyadmin/phpmyadm
+      image: phpmyadmin/phpmyadm:fpm-alpine
       environment:
         - PMA_ARBITRARY=1
       networks:
