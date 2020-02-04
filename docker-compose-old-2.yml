@@ -12,7 +12,7 @@ services:
           constraints: 
             - node.role == manager
   phpmyadmin:
-      image: phpmyadmin/phpmyadmin:latest
+      image: phpmyadmin/phpmyadm
       ports:
         - "8081:80"
       environment:
