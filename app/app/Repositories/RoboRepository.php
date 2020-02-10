@@ -123,6 +123,7 @@ class RoboRepository
                         foreach ($robos as $key => $robo) {
                             if ( !Cache::has( 'jogo_id'.$jogo->id.'estrategia'.$robo->nome."_".$robo->user_id ) ) {                    
                                 $this->analisar($jogoAoVivo,$robo,$diferenca_gols);
+                                $this->roboColombiano($jogoAoVivo);
                             }
                         }
                     }
@@ -134,6 +135,45 @@ class RoboRepository
             }
         }catch( RequestException $e ){
             return 'Erro';
+        }
+    }
+
+    private function roboColombiano($jogoAoVivo) {
+        $notificacao = JogoNotificado::where( 'estrategia', "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
+        if($notificacao == null){
+            if(intval($jogoAoVivo->tempo)>= 82 && intval($jogoAoVivo->tempo)<=88){
+                $primeiro_calculo_casa = $jogoAoVivo->chutes_no_gol[0] 
+                    + $jogoAoVivo->chutes_para_fora[0]
+                    + $jogoAoVivo->c_casa; 
+                $primeiro_calculo_fora = $jogoAoVivo->chutes_no_gol[1] 
+                    + $jogoAoVivo->chutes_para_fora[1]
+                    + $jogoAoVivo->c_fora; 
+                if($primeiro_calculo_casa >= 15 || $primeiro_calculo_fora>= 15) {
+                    $atpm_casa = $jogoAoVivo->ataques_perigosos[0]/intval($jogoAoVivo->tempo); 
+                    $atpm_fora = $jogoAoVivo->ataques_perigosos[1]/intval($jogoAoVivo->tempo); 
+                    if($atpm_casa>= 1 || $atpm_fora >= 1) {
+                        Telegram::sendMessage([
+                            'chat_id' => '-1001231370685', 
+                            'parse_mode' => 'Markdown',
+                            'text' => "*⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'].
+                                    "*\n🏆Liga:* ".$jogoAoVivo->jogo['liga']['l'].
+                                    "*\n⏰Tempo:* ".$jogoAoVivo->tempo.
+                                    "*\n\n💙 Casa - 1º calculo:* ".$primeiro_calculo_casa.
+                                    "*\n💛 Fora - 1º calculo:* ".$primeiro_calculo_fora.
+                                    "*\n\n💙 Casa - ATPM:* ".$atpm_casa.
+                                    "*\n💛 Fora - ATPM:* ".$atpm_fora
+                                    ,	  
+                        ]);
+                        JogoNotificado::create([
+                            'jogo_id' 		=> 1,
+                            'estrategia'	=> "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
+                            'robo_id'       => 1,
+                            'status'        => 'nova',
+                        ]);
+                    }
+
+                }
+            }
         }
     }
 

@@ -14,20 +14,20 @@ services:
 ##################################################
 #                 PHPMYADMIN                     #
 ##################################################
-    phpmyadmin:
-      image: phpmyadmin/phpmyadm
-      container_name: phpmyadmin 
-      restart: always
-      ports:
-        - "8081:80"
-      environment:
-        - PMA_ARBITRARY=1
-      # links:
-      #   - mysql
-      networks:
-        - app-network
-      # depends_on:
-      #   - "mysql"
+    # phpmyadmin:
+    #   image: phpmyadmin/phpmyadm
+    #   container_name: phpmyadmin 
+    #   restart: always
+    #   ports:
+    #     - "8081:80"
+    #   environment:
+    #     - PMA_ARBITRARY=1
+    #   # links:
+    #   #   - mysql
+    #   networks:
+    #     - app-network
+    #   # depends_on:
+    #   #   - "mysql"
 ##################################################
 #                 MYSQL                          #
 ##################################################

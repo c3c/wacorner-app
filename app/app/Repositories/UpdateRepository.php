@@ -82,32 +82,34 @@ class UpdateRepository
     
     }
 
-    private function roboOportunidade( $jogo, $dataAuxiliarDoJogo ){
-        $notificacao = JogoNotificado::where( 'estrategia',$jogo->h." x ".$jogo->a )->first();
+    // private function roboOportunidade( $jogo, $dataAuxiliarDoJogo ){
+    //     $notificacao = JogoNotificado::where( 'estrategia',$jogo->h." x ".$jogo->a )->first();
                                         
-        if( $notificacao == null ){
-            if( $jogo->p_corner[0] != "" ){
-                if( intval( $jogo->p_corner[0] ) < 8 || $jogo->p_corner[0] == "8.0"){
+    //     if( $notificacao == null ){
+    //         if( $jogo->p_corner[0] != "" ){
+    //             if( intval( $jogo->p_corner[0] ) < 8 || $jogo->p_corner[0] == "8.0"){
 
-                    Telegram::sendMessage([
-                        'chat_id' => '-1001231370685', 
-                        'parse_mode' => 'Markdown',
-                        'text' => "Jogo: ".$jogo->h." x ".$jogo->a.
-                                "\nLiga: ".$jogo->l.
-                                "\nData: ".$dataAuxiliarDoJogo.
-                                "\nLinha: ".$jogo->p_corner[0],	  
-                    ]);
-                    JogoNotificado::create([
-                        'jogo_id' 		=> 1,
-                        'estrategia'	=> $jogo->h." x ".$jogo->a,
-                        'robo_id'       => 1,
-                        'status'        => 'nova',
-                    ]);
+    //                 Telegram::sendMessage([
+    //                     'chat_id' => '-1001231370685', 
+    //                     'parse_mode' => 'Markdown',
+    //                     'text' => "Jogo: ".$jogo->h." x ".$jogo->a.
+    //                             "\nLiga: ".$jogo->l.
+    //                             "\nData: ".$dataAuxiliarDoJogo.
+    //                             "\nLinha: ".$jogo->p_corner[0],	  
+    //                 ]);
+    //                 JogoNotificado::create([
+    //                     'jogo_id' 		=> 1,
+    //                     'estrategia'	=> $jogo->h." x ".$jogo->a,
+    //                     'robo_id'       => 1,
+    //                     'status'        => 'nova',
+    //                 ]);
 
-                }
-            }
-        }
-    }
+    //             }
+    //         }
+    //     }
+    // }
+
+   
 
     private function contarCantos($jogoDaApi){
 
@@ -215,7 +217,7 @@ class UpdateRepository
                         $dataAuxiliarDoJogo = $dataDoJogo; 
                         $dataAuxiliarDoJogo = $dataAuxiliarDoJogo->format( 'd/m/Y H:m' );
                         if(env('APP_DEBUG') == false){
-                            $this->roboOportunidade( $jogoDaApi, $dataAuxiliarDoJogo );
+                            $this->roboColombiano( $jogoDaApi, $dataAuxiliarDoJogo );
                         }
                         $liga = Liga::updateOrCreate(
                             ['l' => $jogoDaApi->l],
@@ -396,6 +398,7 @@ class UpdateRepository
                 {
                     $pagina += 1;
                     $this->buscarDadosDeJogosAoVivoAPI( $pagina, $jogosAoVivo );
+
 
                 } else {
                     
