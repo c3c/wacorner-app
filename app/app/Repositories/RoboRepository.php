@@ -110,7 +110,7 @@ class RoboRepository
                         $jogoAoVivo->superioridade      = $this->superioridade( $jogoAoVivo );
 
                         $diferenca_gols = $jogoAoVivo->r_casa > $jogoAoVivo->r_fora ? ($jogoAoVivo->r_casa - $jogoAoVivo->r_fora) : ($jogoAoVivo->r_fora - $jogoAoVivo->r_casa);
-                        roboColombiano($jogoAoVivo, $diferenca_gols);
+                        $this->roboColombiano($jogoAoVivo, $diferenca_gols);
                         if ( Cache::has( 'robos-ativos-wacorner' ) ) {
 
                             $robos_ativos = Cache::get( 'robos-ativos-wacorner' );
