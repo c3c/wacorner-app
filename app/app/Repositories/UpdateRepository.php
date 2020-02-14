@@ -216,9 +216,9 @@ class UpdateRepository
                         $dataDoJogo->setTimeZone( 'America/Fortaleza' );
                         $dataAuxiliarDoJogo = $dataDoJogo; 
                         $dataAuxiliarDoJogo = $dataAuxiliarDoJogo->format( 'd/m/Y H:m' );
-                        if(env('APP_DEBUG') == false){
-                            $this->roboColombiano( $jogoDaApi, $dataAuxiliarDoJogo );
-                        }
+                        // if(env('APP_DEBUG') == false){
+                        //     $this->roboColombiano( $jogoDaApi, $dataAuxiliarDoJogo );
+                        // }
                         $liga = Liga::updateOrCreate(
                             ['l' => $jogoDaApi->l],
                             ['l_id' => "".$jogoDaApi->l_id]
