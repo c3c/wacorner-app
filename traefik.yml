@@ -157,8 +157,8 @@ services:
       - consul-leader
   phpmyadmin:
       image: bitnami/phpmyadmin:latest
-      # environment:
-      #   - PMA_ARBITRARY=1
+      environment:
+        - PHPMYADMIN_ALLOW_ARBITRARY_SERVER=true
       networks:
         - traefik-default
         - traefik-public
