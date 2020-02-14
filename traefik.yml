@@ -155,33 +155,33 @@ services:
     depends_on:
       - traefik
       - consul-leader
-  # phpmyadmin:
-  #     image: phpmyadmin/phpmyadm:fpm-alpine
-  #     environment:
-  #       - PMA_ARBITRARY=1
-  #     networks:
-  #       - traefik-default
-  #       - traefik-public
-  #     depends_on:
-  #       - mysql
-  #       - consul-leader
-  #       - traefik
-  #     deploy:
-  #       replicas: 1
-  #       # placement:
-  #       #   constraints: 
-  #       #     - node.role == worker
-  #       labels:
-  #           - traefik.frontend.rule=Host:phpmyadmin.wacorner.com
-  #           - traefik.enable=true
-  #           - traefik.port=80
-  #           - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
-  #           - traefik.docker.network=traefik-public
-  #           # Traefik service that listens to HTTP
-  #           - traefik.redirectorservice.frontend.entryPoints=http
-  #           - traefik.redirectorservice.frontend.redirect.entryPoint=https
-  #           # Traefik service that listens to HTTPS
-  #           - traefik.webservice.frontend.entryPoints=https
+  phpmyadmin:
+      image: bitnami/phpmyadmin:latest
+      # environment:
+      #   - PMA_ARBITRARY=1
+      networks:
+        - traefik-default
+        - traefik-public
+      depends_on:
+        - mysql
+        - consul-leader
+        - traefik
+      deploy:
+        replicas: 1
+        # placement:
+        #   constraints: 
+        #     - node.role == worker
+        labels:
+            - traefik.frontend.rule=Host:phpmyadmin.wacorner.com
+            - traefik.enable=true
+            - traefik.port=80
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
   mysql:
       image: mysql
       command: --default-authentication-plugin=mysql_native_password
