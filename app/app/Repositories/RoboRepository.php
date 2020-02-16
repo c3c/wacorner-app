@@ -180,8 +180,8 @@ class RoboRepository
                             $atpm_casa = $jogoAoVivo->ataques_perigosos[0]/intval($jogoAoVivo->tempo); 
                             $atpm_fora = $jogoAoVivo->ataques_perigosos[1]/intval($jogoAoVivo->tempo); 
                             if($atpm_casa>= 1 || $atpm_fora >= 1) {
-                                if($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa'){
-                                    if($primeiro_calculo_fora > $primeiro_calculo_casa && $resultado_jogo != 'fora'){
+                                if(($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa') || 
+                                    ($primeiro_calculo_fora > $primeiro_calculo_casa && $resultado_jogo != 'fora')){
                                         $texto_colombiano = 
                                         "*⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." *".$jogoAoVivo->r_casa."* x *".$jogoAoVivo->r_fora."* ".$jogoAoVivo->jogo['time_fora']['nome'].
                                         "*\n🏆Liga:* ".$jogoAoVivo->jogo['liga']['l'].
@@ -210,7 +210,6 @@ class RoboRepository
                                             'robo_id'       => 1,
                                             'status'        => 'nova',
                                         ]);
-                                    }
                                 }
                             }
                         }
