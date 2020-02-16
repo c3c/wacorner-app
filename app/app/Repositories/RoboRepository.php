@@ -193,7 +193,7 @@ class RoboRepository
                                         if($result[1] != 0){
                                             $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[0]." jogador(es) expulso(s)";
                                         }
-                                        $texto_colombiano .=
+                        
                                         $texto_colombiano .=
                                         "*\n\n💙 Casa - 1º calculo:* ".$primeiro_calculo_casa.
                                         "*\n💛 Fora - 1º calculo:* ".$primeiro_calculo_fora.
