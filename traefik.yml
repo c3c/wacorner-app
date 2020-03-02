@@ -82,7 +82,7 @@ services:
       - mysql
     
   php-fpm:
-    image: wesleyvieira12/wacorner-php-fpm:v22
+    image: wesleyvieira12/wacorner-php-fpm:v23
     environment:
      - APP_DEBUG=false
      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
