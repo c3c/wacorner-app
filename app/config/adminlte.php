@@ -148,61 +148,61 @@ return [
                     'text' => '10 min HT',
                     'url'  => 'admin/jogos/index/ht10/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '10 a 20 min HT',
                     'url'  => 'admin/jogos/index/ht1020/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '35 min HT',
                     'url'  => 'admin/jogos/index/ht35/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '38 min HT',
                     'url'  => 'admin/jogos/index/ht38/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '75 min FT',
                     'url'  => 'admin/jogos/index/ft75/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '82 min FT',
                     'url'  => 'admin/jogos/index/ft82/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '88 min FT',
                     'url'  => 'admin/jogos/index/ft88/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '1º Tempo',
                     'url'  => 'admin/jogos-estatistica/index/ht1/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => '2º Tempo',
                     'url'  => 'admin/jogos-estatistica/index/ht2/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
                 [
                     'text' => 'Total',
                     'url'  => 'admin/jogos-estatistica/index/ft/hoje/',
                     'icon' => 'list',
-                    
+
                 ],
             ],
         ],
@@ -224,7 +224,7 @@ return [
         // ],
         'PLANO',
         [
-            
+
             'text' => 'Novo plano',
             'icon' => 'diamond',
             'submenu' =>[
@@ -232,41 +232,41 @@ return [
                     'text' => 'Pagar com PagSeguro',
                     'url'  => 'admin/venda',
                     'icon' => 'credit-card',
-                    
+
                 ],
                 [
                     'text' => 'Pagar com PayPal',
                     'url'  => 'admin/venda/paypal',
                     'icon' => 'paypal',
-                    
+
                 ],
                 [
                     'text' => 'Pagar com PicPay',
                     'url'  => 'admin/venda/picpay',
                     'icon' => 'qrcode',
-                    
+
                 ],
-                [
-                    'text' => 'Pagar com Tranferência',
-                    'url'  => 'admin/venda/transferencia',
-                    'icon' => 'exchange',
-                    
-                ],
-                [
-                    'text' => 'Cupom Promocional',
-                    'url'  => 'admin/venda/cupom/promocional',
-                    'icon' => 'smile-o',
-                    
-                ],
-            
+                // [
+                //     'text' => 'Pagar com Tranferência',
+                //     'url'  => 'admin/venda/transferencia',
+                //     'icon' => 'exchange',
+
+                // ],
+                // [
+                //     'text' => 'Cupom Promocional',
+                //     'url'  => 'admin/venda/cupom/promocional',
+                //     'icon' => 'smile-o',
+
+                // ],
+
             ],
         ],
         [
-            
+
             'text' => 'Histórico de planos',
             'url'  => 'admin/venda/show',
             'icon' => 'history',
-            
+
         ],
         'EXTRA',
         [
@@ -274,7 +274,7 @@ return [
             'url'  => 'admin/estrategias',
             'icon' => 'heart',
         ]
-        
+
     ],
 
     /*
