@@ -46,11 +46,11 @@ class RoboController extends Controller
                 'porcentagem_min_casa'              => 0,
                 'porcentagem_min_fora'              => 0,
                 'escanteios_min'                    => 0,
-                'media_total_estrategia_favorito'   => 0,        
-                'media_favor_estrategia_favorito'   => 0,        
+                'media_total_estrategia_favorito'   => 0,
+                'media_favor_estrategia_favorito'   => 0,
                 'media_contra_estrategia_favorito'  => 0,
-                'media_total_estrategia_zebra'      => 0,        
-                'media_favor_estrategia_zebra'      => 0,        
+                'media_total_estrategia_zebra'      => 0,
+                'media_favor_estrategia_zebra'      => 0,
                 'media_contra_estrategia_zebra'     => 0,
             ]);
         }
@@ -89,7 +89,7 @@ class RoboController extends Controller
     public function edit($id)
     {
         $robo = Robo::find($id);
-           
+
         return view('admin.robo.edit',compact('robo'));
     }
 
@@ -121,12 +121,34 @@ class RoboController extends Controller
     }
 
     public function alterarStatus($id)
-    {
-        $robo = Robo::find($id);
-        $robo->status = $robo->status == 0 ? 1 : 0;
-        $robo->save();
-
-        return back()->with('success','Status do robô '.$robo->nome.' foi alterado com sucesso!');
+    {   if($id == -1){
+            auth()->user()->robos()->create([
+                'nome'                              => "Funil WAcorner",
+                'status'                            => 1,
+                'intervalo_inicio'                  => 1000,
+                'intervalo_fim'                     => 1001,
+                'situacao'                          => 'f-s-p',
+                'diferenca_gols'                    => 0,
+                'superioridade'                     => 0,
+                'qtd_min_jogos_casa'                => 1000,
+                'qtd_min_jogos_fora'                => 1000,
+                'porcentagem_min_total'             => 0,
+                'porcentagem_min_casa'              => 0,
+                'porcentagem_min_fora'              => 0,
+                'escanteios_min'                    => 0,
+                'media_total_estrategia_favorito'   => 0,
+                'media_favor_estrategia_favorito'   => 0,
+                'media_contra_estrategia_favorito'  => 0,
+                'media_total_estrategia_zebra'      => 0,
+                'media_favor_estrategia_zebra'      => 0,
+                'media_contra_estrategia_zebra'     => 0,
+            ]);
+        } else {
+            $robo = Robo::find($id);
+            $robo->status = $robo->status == 0 ? 1 : 0;
+            $robo->save();
+        }
+        return back()->with('success','Status do robô foi alterado com sucesso!');
     }
 
     public function notificacoes()
@@ -180,7 +202,7 @@ class RoboController extends Controller
 
 		return back()->with('success', "Desconectado!");
     }
-    
+
     public function sendListRobo($id,$data){
         $robo = Robo::findOrFail($id);
         $roboRepository = new RoboRepository();
