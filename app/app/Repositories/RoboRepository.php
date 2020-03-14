@@ -174,7 +174,8 @@ class RoboRepository
                         $resultado_jogo = 'empate';
                         if($jogoAoVivo->r_casa > $jogoAoVivo->r_fora){
                             $resultado_jogo = 'casa';
-                        }else{
+                        }
+                        if($jogoAoVivo->r_casa < $jogoAoVivo->r_fora){
                             $resultado_jogo = 'fora';
                         }
 
@@ -241,7 +242,8 @@ class RoboRepository
                             $resultado_jogo = 'empate';
                             if($jogoAoVivo->r_casa > $jogoAoVivo->r_fora){
                                 $resultado_jogo = 'casa';
-                            }else{
+                            }
+                            if($jogoAoVivo->r_casa < $jogoAoVivo->r_fora){
                                 $resultado_jogo = 'fora';
                             }
 
