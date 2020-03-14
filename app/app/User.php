@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Cache;
 class User extends Authenticatable
 {
     use Notifiable;
-  
+
     /**
      * The attributes that are mass assignable.
      *
@@ -40,7 +40,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token','data_aniversario','rua','numero','bairro','cep','cidade','estado'
     ];
-    
+
     public function users()
     {
         return $this->hasMany(User::class);
@@ -52,11 +52,11 @@ class User extends Authenticatable
 
            Telegram::sendMessage([
             'chat_id' => $chat_id,
-            'parse_mode' => 'Markdown', 
+            'parse_mode' => 'Markdown',
             'text' => $msg
             ]);
 
-           sleep(0.2);
+           sleep(0.05);
 
 
         } catch (TelegramResponseException $e) {
@@ -135,45 +135,45 @@ class User extends Authenticatable
     }
 
     public function isAdmin()
-    {        
-        return $this->admin === 1;    
+    {
+        return $this->admin === 1;
     }
 
-    public function aviso_expiracao(){   
+    public function aviso_expiracao(){
         $data_expiracao = new Carbon($this->data_expiracao);
-        $data_hj = new Carbon(date('Y-m-d')); 
-        if($this->data_expiracao!=null && $data_hj->diffInDays($data_expiracao) > 5 || $this->admin == 1)    
+        $data_hj = new Carbon(date('Y-m-d'));
+        if($this->data_expiracao!=null && $data_hj->diffInDays($data_expiracao) > 5 || $this->admin == 1)
             return false;
-        else    
+        else
             return true;
     }
 
-    public function ativo(){   
+    public function ativo(){
         $data_expiracao = new Carbon($this->data_expiracao);
-        $data_hj = new Carbon(date('Y-m-d')); 
-        if($this->data_expiracao!=null && $data_expiracao >= $data_hj || $this->admin == 1)    
+        $data_hj = new Carbon(date('Y-m-d'));
+        if($this->data_expiracao!=null && $data_expiracao >= $data_hj || $this->admin == 1)
             return true;
-        else    
+        else
             return false;
     }
 
     public function renovacao($plano = null,$dias = null){
 
         $data_expiracao = new Carbon($this->data_expiracao);
-        
+
         if($dias == null)
         {
             if($this->ativo()){
                 if($plano != 'basico')
                     $this->data_expiracao = $data_expiracao->addMonth();
                 else
-                   $this->data_expiracao = $data_expiracao->addDays(10);  
+                   $this->data_expiracao = $data_expiracao->addDays(10);
             }else{
 
                 if($plano != 'basico')
                     $this->data_expiracao = Carbon::now()->addMonth();
                 else
-                   $this->data_expiracao = Carbon::now()->addDays(10); 
+                   $this->data_expiracao = Carbon::now()->addDays(10);
             }
 
         } else {
@@ -181,10 +181,10 @@ class User extends Authenticatable
             {
                 $this->data_expiracao = $data_expiracao->addDays($dias)->format('Y-m-d');
             } else {
-                $this->data_expiracao = Carbon::now()->addDays($dias)->format('Y-m-d'); 
+                $this->data_expiracao = Carbon::now()->addDays($dias)->format('Y-m-d');
             }
         }
-        
+
         if($this->save()){
             return true;
         }else{
@@ -195,7 +195,7 @@ class User extends Authenticatable
     public function renovacaoGratis($dias = null){
         if($this->data_expiracao == null)
             $this->data_expiracao = Carbon::now()->addDays(3);
-        
+
         if($this->save()){
             return true;
         }else{
@@ -213,12 +213,12 @@ class User extends Authenticatable
             else
                 $this->data_expiracao = $data_expiracao->subMonth();
         }
-                
+
         if($this->save())
             return true;
         else
             return false;
-        
+
     }
 
     public function zonas(){

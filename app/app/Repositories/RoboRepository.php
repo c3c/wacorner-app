@@ -161,8 +161,7 @@ class RoboRepository
     private function roboFunil($jogoAoVivo, $diferenca_gols, $robos_ativos) {
         $robos_ativos = Robo::whereIn('id',array_unique($robos_ativos))->get();
         if(intval($jogoAoVivo->tempo)>= 78 && intval($jogoAoVivo->tempo)<=84){
-            $notificacao = JogoNotificado::where( 'estrategia', "funil ft- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
-            if($notificacao == null){
+
                 if($diferenca_gols <= 1){
                     if(($jogoAoVivo->c_casa + $jogoAoVivo->c_fora) >= 8){
                         $primeiro_calculo_casa = $jogoAoVivo->chutes_no_gol[0]
@@ -211,19 +210,14 @@ class RoboRepository
                                     // "*\n💛 Fora - ATPM:* ".$atpm_fora;
                                     foreach( $robos_ativos as $robo) {
                                         if($robo->nome == "Funil WAcorner"){
-                                            Telegram::sendMessage([
-                                                // 'chat_id' => '-1001231370685', CHAT PARA CANAL DO FUNIL WACORNER
-                                                'chat_id' => $robo->user->telegram_chat_id,
-                                                'parse_mode' => 'Markdown',
-                                                'text' => $texto_colombiano,
-                                            ]);
-                                            JogoNotificado::create([
-                                                'jogo_id' 		=> 1,
-                                                'estrategia'	=> "funil ft- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
-                                                'robo_id'       => 1,
-                                                'status'        => 'nova',
-                                            ]);
-                                            sleep(0.05);
+                                            if(!Cache::has('jogo_id'.$jogoAoVivo->jogo['id'].'estrategia'.$robo->nome." FT _".$robo->user_id)){
+                                                $robo->user->sendMenssageTelegram(
+                                                    $robo->user->telegram_chat_id,
+                                                    $texto_colombiano
+                                                );
+
+                                                Cache::add('jogo_id'.$jogoAoVivo->jogo['id'].'estrategia'.$robo->nome." FT _".$robo->user_id,1,90);
+                                            }
                                         }
                                     }
                                 }
@@ -231,12 +225,9 @@ class RoboRepository
                         }
                     }
                 }
-            }
+
         } else {
             if(intval($jogoAoVivo->tempo)>= 28 && intval($jogoAoVivo->tempo)<=34){
-                $notificacao = JogoNotificado::where( 'estrategia', "funil ht- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
-
-                if($notificacao == null){
                     if($diferenca_gols <= 1){
                         if(($jogoAoVivo->c_casa + $jogoAoVivo->c_fora) >= 4){
 
@@ -286,19 +277,14 @@ class RoboRepository
                                         // "*\n💛 Fora - ATPM:* ".$atpm_fora;
                                         foreach( $robos_ativos as $robo) {
                                             if($robo->nome == "Funil WAcorner"){
-                                                Telegram::sendMessage([
-                                                    // 'chat_id' => '-1001231370685', CHAT PARA CANAL DO FUNIL WACORNER
-                                                    'chat_id' => $robo->user->telegram_chat_id,
-                                                    'parse_mode' => 'Markdown',
-                                                    'text' => $texto_colombiano,
-                                                ]);
-                                                JogoNotificado::create([
-                                                    'jogo_id' 		=> 1,
-                                                    'estrategia'	=> "funil ht- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
-                                                    'robo_id'       => 1,
-                                                    'status'        => 'nova',
-                                                ]);
-                                                sleep(0.05);
+                                                if(!Cache::has('jogo_id'.$jogoAoVivo->jogo['id'].'estrategia'.$robo->nome." HT _".$robo->user_id)){
+                                                    $robo->user->sendMenssageTelegram(
+                                                        $robo->user->telegram_chat_id,
+                                                        $texto_colombiano
+                                                    );
+
+                                                    Cache::add('jogo_id'.$jogoAoVivo->jogo['id'].'estrategia'.$robo->nome." HT _".$robo->user_id,1,90);
+                                                }
                                             }
                                         }
                                     }
@@ -307,7 +293,7 @@ class RoboRepository
                         }
                     }
                 }
-            }
+
         }
     }
 
