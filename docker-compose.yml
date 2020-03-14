@@ -71,7 +71,7 @@ services:
       working_dir: /application
       restart: always
       # volumes:
-      #   - ./application:/application
+      #   - ./app:/application
       ports:
         - "9001:9001"
       # links:

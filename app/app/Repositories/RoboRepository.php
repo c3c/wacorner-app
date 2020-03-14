@@ -65,8 +65,10 @@ class RoboRepository
                 $this->rodarRobos();
 
             } else {
+
                 if ( !Cache::has( 'robos-ativos-wacorner' ) )
                 {
+
                     $data_hj = new Carbon(date('Y-m-d'));
                     $robos = Robo::where('status','=','1')->get();
                     $robos_ativos = array();
@@ -88,7 +90,6 @@ class RoboRepository
 
                     if ( $jogo!=null )
                     {
-
                         $jogoAoVivo                     = new Live();
                         $jogoAoVivo->jogo               = $jogo->load( 'liga', 'time_casa', 'time_fora' )
                                                                 ->toArray();
@@ -115,9 +116,9 @@ class RoboRepository
                         if ( Cache::has( 'robos-ativos-wacorner' ) ) {
 
                             $robos_ativos = Cache::get( 'robos-ativos-wacorner' );
-                            $this->roboColombiano($jogoAoVivo, $diferenca_gols, $robos_ativos);
+                            $this->roboFunil($jogoAoVivo, $diferenca_gols, $robos_ativos);
                             if($robos_ativos != null && $robos_ativos != ''){
-                                $robos = Robo::whereIn('id',$robos_ativos)
+                                $robos = Robo::whereIn('id',array_unique($robos_ativos))
                                     ->where('intervalo_inicio','<',intval($jogoAoVivo->tempo)+1)
                                     ->where('intervalo_fim','>=',intval($jogoAoVivo->tempo))
                                     ->where('escanteios_min','<',$jogoAoVivo->c_casa+$jogoAoVivo->c_fora+1)
@@ -157,12 +158,13 @@ class RoboRepository
         return [$casa, $fora];
     }
 
-    private function roboColombiano($jogoAoVivo, $diferenca_gols, $robos_ativos) {
-        $notificacao = JogoNotificado::where( 'estrategia', "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
-        if($notificacao == null){
-            if($diferenca_gols <= 1){
-                if(($jogoAoVivo->c_casa + $jogoAoVivo->c_fora) >= 8){
-                    if(intval($jogoAoVivo->tempo)>= 78 && intval($jogoAoVivo->tempo)<=84){
+    private function roboFunil($jogoAoVivo, $diferenca_gols, $robos_ativos) {
+        $robos_ativos = Robo::whereIn('id',array_unique($robos_ativos))->get();
+        if(intval($jogoAoVivo->tempo)>= 78 && intval($jogoAoVivo->tempo)<=84){
+            $notificacao = JogoNotificado::where( 'estrategia', "funil ft- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
+            if($notificacao == null){
+                if($diferenca_gols <= 1){
+                    if(($jogoAoVivo->c_casa + $jogoAoVivo->c_fora) >= 8){
                         $primeiro_calculo_casa = $jogoAoVivo->chutes_no_gol[0]
                             + $jogoAoVivo->chutes_para_fora[0]
                             + $jogoAoVivo->c_casa;
@@ -182,9 +184,84 @@ class RoboRepository
                             $atpm_fora = $jogoAoVivo->ataques_perigosos[1]/intval($jogoAoVivo->tempo);
                             if($atpm_casa>= 1 || $atpm_fora >= 1) {
                                 if(($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa') ||
+                                ($primeiro_calculo_fora > $primeiro_calculo_casa && $resultado_jogo != 'fora')){
+                                    $texto_colombiano = "--------------------------------------";
+                                    $texto_colombiano .= "\n💎 FUNIL WAcorner - *[ FT ]* 💎";
+                                    $texto_colombiano .= "\n--------------------------------------";
+                                    $texto_colombiano .=
+                                    "*\n⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." *".$jogoAoVivo->r_casa."* x *".$jogoAoVivo->r_fora."* ".$jogoAoVivo->jogo['time_fora']['nome'].
+                                    "*\n🏆Liga:* ".$jogoAoVivo->jogo['liga']['l'].
+                                    "*\n⏰Tempo:* ".$jogoAoVivo->tempo;
+                                    $result = $this->verificarCartaoVermelho($jogoAoVivo->eventos);
+
+                                    if($resultado_jogo != "casa" && $result[0] != 0){
+                                        $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s), MAS está 🌟 MELHOR 🌟 no jogo!";
+                                    } else if ($resultado_jogo != "fora" && $result[1] != 0){
+                                        $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[1]." jogador(es) expulso(s), MAS está 🌟 MELHOR 🌟 no jogo!";
+                                    } else if($result[0] != 0){
+                                        $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s)!";
+                                    } else if($result[1] != 0){
+                                        $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[1]." jogador(es) expulso(s)";
+                                    }
+
+                                    // $texto_colombiano .=
+                                    // "*\n\n💙 Casa - 1º calculo:* ".$primeiro_calculo_casa.
+                                    // "*\n💛 Fora - 1º calculo:* ".$primeiro_calculo_fora.
+                                    // "*\n\n💙 Casa - ATPM:* ".$atpm_casa.
+                                    // "*\n💛 Fora - ATPM:* ".$atpm_fora;
+                                    foreach( $robos_ativos as $robo) {
+                                        if($robo->nome == "Funil WAcorner"){
+                                            Telegram::sendMessage([
+                                                // 'chat_id' => '-1001231370685', CHAT PARA CANAL DO FUNIL WACORNER
+                                                'chat_id' => $robo->user->telegram_chat_id,
+                                                'parse_mode' => 'Markdown',
+                                                'text' => $texto_colombiano,
+                                            ]);
+                                            JogoNotificado::create([
+                                                'jogo_id' 		=> 1,
+                                                'estrategia'	=> "funil ft- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
+                                                'robo_id'       => 1,
+                                                'status'        => 'nova',
+                                            ]);
+                                            sleep(0.05);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            if(intval($jogoAoVivo->tempo)>= 28 && intval($jogoAoVivo->tempo)<=34){
+                $notificacao = JogoNotificado::where( 'estrategia', "funil ht- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
+
+                if($notificacao == null){
+                    if($diferenca_gols <= 1){
+                        if(($jogoAoVivo->c_casa + $jogoAoVivo->c_fora) >= 4){
+
+                            $primeiro_calculo_casa = $jogoAoVivo->chutes_no_gol[0]
+                                + $jogoAoVivo->chutes_para_fora[0]
+                                + $jogoAoVivo->c_casa;
+                            $primeiro_calculo_fora = $jogoAoVivo->chutes_no_gol[1]
+                                + $jogoAoVivo->chutes_para_fora[1]
+                                + $jogoAoVivo->c_fora;
+
+                            $resultado_jogo = 'empate';
+                            if($jogoAoVivo->r_casa > $jogoAoVivo->r_fora){
+                                $resultado_jogo = 'casa';
+                            }else{
+                                $resultado_jogo = 'fora';
+                            }
+
+                            if($primeiro_calculo_casa >= 8 || $primeiro_calculo_fora >= 8) {
+                                $atpm_casa = $jogoAoVivo->ataques_perigosos[0]/intval($jogoAoVivo->tempo);
+                                $atpm_fora = $jogoAoVivo->ataques_perigosos[1]/intval($jogoAoVivo->tempo);
+                                if($atpm_casa>= 1 || $atpm_fora >= 1) {
+                                    if(($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa') ||
                                     ($primeiro_calculo_fora > $primeiro_calculo_casa && $resultado_jogo != 'fora')){
                                         $texto_colombiano = "--------------------------------------";
-                                        $texto_colombiano .= "\n💎 FUNIL WAcorner 💎";
+                                        $texto_colombiano .= "\n💎 FUNIL WAcorner - *[ HT ]* 💎";
                                         $texto_colombiano .= "\n--------------------------------------";
                                         $texto_colombiano .=
                                         "*\n⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." *".$jogoAoVivo->r_casa."* x *".$jogoAoVivo->r_fora."* ".$jogoAoVivo->jogo['time_fora']['nome'].
@@ -217,13 +294,14 @@ class RoboRepository
                                                 ]);
                                                 JogoNotificado::create([
                                                     'jogo_id' 		=> 1,
-                                                    'estrategia'	=> "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
+                                                    'estrategia'	=> "funil ht- ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
                                                     'robo_id'       => 1,
                                                     'status'        => 'nova',
                                                 ]);
                                                 sleep(0.05);
                                             }
                                         }
+                                    }
                                 }
                             }
                         }
@@ -398,8 +476,8 @@ class RoboRepository
         );
 
         Cache::add('jogo_id'.$live->jogo['id'].'estrategia'.$robo->nome."_".$robo->user_id,1,90);
-
-        echo "\njogo ENVIDADO para->".$robo->user->email;
+        $agora  = new Carbon;
+        echo "\nData:".$agora." - Jogo ".$live->jogo['time_casa']['nome']." x ".$live->jogo['time_fora']['nome']." ENVIDADO para-> ".$robo->user->email;
     }
 
     public function sendListPre($robo,$data){
