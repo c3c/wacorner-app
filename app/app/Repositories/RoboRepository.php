@@ -183,8 +183,11 @@ class RoboRepository
                             if($atpm_casa>= 1 || $atpm_fora >= 1) {
                                 if(($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa') ||
                                     ($primeiro_calculo_fora > $primeiro_calculo_casa && $resultado_jogo != 'fora')){
-                                        $texto_colombiano =
-                                        "*⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." *".$jogoAoVivo->r_casa."* x *".$jogoAoVivo->r_fora."* ".$jogoAoVivo->jogo['time_fora']['nome'].
+                                        $texto_colombiano = "--------------------------------------";
+                                        $texto_colombiano .= "\n💎 FUNIL WAcorner 💎";
+                                        $texto_colombiano .= "\n--------------------------------------";
+                                        $texto_colombiano .=
+                                        "*\n⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." *".$jogoAoVivo->r_casa."* x *".$jogoAoVivo->r_fora."* ".$jogoAoVivo->jogo['time_fora']['nome'].
                                         "*\n🏆Liga:* ".$jogoAoVivo->jogo['liga']['l'].
                                         "*\n⏰Tempo:* ".$jogoAoVivo->tempo;
                                         $result = $this->verificarCartaoVermelho($jogoAoVivo->eventos);
