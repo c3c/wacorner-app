@@ -7,16 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Site de estatísticas de escanteios(cantos) onde você irá encontrar estatisticas especificar para suas apostas. Estrategia 35ht, 10ht, 75ft, 82ft">
-    <meta name="author" content="Wacorner - Site de Estatisticas de Cantos">   
-    <link rel="shortcut icon" href="<?php echo e(asset('assets/images/icone.png')); ?>"> 
-     
+    <meta name="author" content="Wacorner - Site de Estatisticas de Cantos">
+    <link rel="shortcut icon" href="<?php echo e(asset('assets/images/icone.png')); ?>">
+
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?php echo e(asset('vendor/adminlte/vendor/font-awesome/css/font-awesome.min.css')); ?>">
     <!-- Global CSS -->
-    <link rel="stylesheet" href="<?php echo e(asset('assets/plugins/bootstrap/css/bootstrap.min.css')); ?>">   
-    <!-- Theme CSS -->  
+    <link rel="stylesheet" href="<?php echo e(asset('assets/plugins/bootstrap/css/bootstrap.min.css')); ?>">
+    <!-- Theme CSS -->
     <link id="theme-style" rel="stylesheet" href="<?php echo e(asset('assets/css/styles.css')); ?>">
     <?php if($id != null): ?>
         <!-- Facebook Pixel Code -->
@@ -47,27 +47,27 @@
       gtag('config', 'UA-135732933-1');
     </script>
 
-    
-</head> 
+
+</head>
 
 <body>
-    <!-- ******HEADER****** --> 
-    <header id="header" class="header">  
-        <div class="container">       
+    <!-- ******HEADER****** -->
+    <header id="header" class="header">
+        <div class="container">
             <h1 class="logo">
                 <a class="scrollto" href="#hero">
-                   
+
                     <span class="text"><span class="highlight"><i class="fa fa-line-chart"></i> WA</span>corner</span></a>
             </h1><!--//logo-->
             <nav class="main-nav navbar-expand-md float-right navbar-inverse" role="navigation">
-                
+
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar-collapse">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button><!--//nav-toggle-->
-                
+
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
                         <?php if(Route::has('login')): ?>
@@ -76,21 +76,21 @@
                             <?php else: ?>
                                 <li class="nav-item"><a class="active nav-link" href="<?php echo e(route('login')); ?>">Login</a></li>
                             <?php endif; ?>
-                        <?php endif; ?>                     
-                        <li class="nav-item"><a class="nav-link scrollto" href="#estrategia">Estratégias e Estatísticas</a></li>                        
+                        <?php endif; ?>
+                        <li class="nav-item"><a class="nav-link scrollto" href="#estrategia">Estratégias e Estatísticas</a></li>
                         <li class="nav-item"><a class="nav-link scrollto" href="#ranking">Ao Vivo</a></li>
                         <li class="nav-item"><a class="nav-link scrollto" href="#pricing">Planos</a></li>
                         <li class="nav-item"><a class="nav-link scrollto" href="#contact">Contato</a></li>
                     </ul><!--//nav-->
                 </div><!--//navabr-collapse-->
-            </nav><!--//main-nav-->                     
+            </nav><!--//main-nav-->
         </div><!--//container-->
     </header><!--//header-->
-    
+
     <div id="hero" class="hero-section">
-        
+
         <div id="hero-carousel" class="hero-carousel carousel carousel-fade slide" data-ride="carousel" data-interval="10000">
-            
+
             <div class="figure-holder-wrapper">
                 <div class="container">
                     <div class="row justify-content-end">
@@ -100,7 +100,7 @@
                     </div><!--//row-->
                 </div><!--//container-->
             </div><!--//figure-holder-wrapper-->
-            
+
             <!-- Indicators -->
             <ol class="carousel-indicators">
                 <li class="active" data-slide-to="0" data-target="#hero-carousel"></li>
@@ -108,61 +108,61 @@
                 <li data-slide-to="2" data-target="#hero-carousel"></li>
                 <li data-slide-to="3" data-target="#hero-carousel"></li>
             </ol>
-            
+
             <!-- Wrapper for slides -->
             <div class="carousel-inner">
-                
+
                 <div class="carousel-item item-1 active">
                     <div class="item-content container">
                         <div class="item-content-inner">
-                            
+
                             <h2 class="heading">Venha conhecer nosso sistema</h2>
-                            <p class="intro">Teste por 1 dia gratuitamente.</p>
+                            <p class="intro">Estratégias Pré-Live, In-Live e Robôs.</p>
                             <a class="btn btn-primary btn-cta" href="#pricing">Registrar-se</a>
-                            
+
                         </div><!--//item-content-inner-->
                     </div><!--//item-content-->
                 </div><!--//item-->
-                
+
                 <div class="carousel-item item-2">
                     <div class="item-content container">
                         <div class="item-content-inner">
-                            
+
                             <h2 class="heading">Analise Jogos Ao Vivo</h2>
                             <p class="intro">Caso não tenha tempo de fazer analise pré-live, use essa ferramenta para te auxiliar na escolha de suas entradas!</p>
-                            
-                            
+
+
                         </div><!--//item-content-inner-->
                     </div>
                 </div><!--//item-->
                 <div class="carousel-item item-3">
                     <div class="item-content container">
                         <div class="item-content-inner">
-                            
+
                             <h2 class="heading">Gestão de Banca</h2>
                             <p class="intro">Pare de utilizar planilhas e venha fazer sua gestão no nosso site.</p>
-                            
-                            
+
+
                         </div><!--//item-content-inner-->
                     </div>
                 </div><!--//item-->
                 <div class="carousel-item item-4">
                     <div class="item-content container">
                         <div class="item-content-inner">
-                            
+
                             <h2 class="heading">Robôs WAcorner</h2>
                             <p class="intro">Configure do seu jeito e de forma simples. Receba as notificações de jogos no seu telegram.</p>
-                            
-                            
+
+
                         </div><!--//item-content-inner-->
                     </div>
                 </div><!--//item-->
-                
+
             </div><!--//carousel-inner-->
 
         </div><!--//carousel-->
     </div><!--//hero-->
-    
+
     <div id="estrategia" class="about-section">
         <div class="container text-center">
             <h2 class="section-title">Estratégias e Estatísticas</h2>
@@ -174,7 +174,7 @@
                     <div class="item-inner">
                         <h3 class="item-title">10 HT</h3>
                         <div class="item-desc">
-                            Nessa estratégia o objetivo será buscar 1 canto nos primeiros 10 minutos de jogo. 
+                            Nessa estratégia o objetivo será buscar 1 canto nos primeiros 10 minutos de jogo.
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -182,7 +182,7 @@
                     <div class="item-inner">
                         <h3 class="item-title">1020 HT</h3>
                         <div class="item-desc">
-                            Nessa estratégia o objetivo será buscar 1 canto entre os minutos 10 e 20 do jogo. 
+                            Nessa estratégia o objetivo será buscar 1 canto entre os minutos 10 e 20 do jogo.
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -190,7 +190,7 @@
                     <div class="item-inner">
                         <h3 class="item-title">35 HT</h3>
                         <div class="item-desc">
-                            Nessa estratégia o objetivo será buscar 1 canto ou 2 cantos no final do 1º tempo. 
+                            Nessa estratégia o objetivo será buscar 1 canto ou 2 cantos no final do 1º tempo.
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -198,7 +198,7 @@
                     <div class="item-inner">
                         <h3 class="item-title">38 HT</h3>
                         <div class="item-desc">
-                            Nessa estratégia o objetivo será buscar 1 canto no final do 1º tempo. 
+                            Nessa estratégia o objetivo será buscar 1 canto no final do 1º tempo.
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -214,7 +214,7 @@
                     <div class="item-inner">
                         <h3 class="item-title">82 FT</h3>
                         <div class="item-desc">
-                        Nessa estratégia o objetivo será buscar 1 canto ou 2 cantos no final do 2º tempo. 
+                        Nessa estratégia o objetivo será buscar 1 canto ou 2 cantos no final do 2º tempo.
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -226,7 +226,7 @@
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
-                
+
             </div><!--//items-wrapper-->
             <div class="col-md-2"><h4>Estatísticas</h4>
             <hr></div>
@@ -235,7 +235,7 @@
                     <div class="item-inner">
                         <h3 class="item-title" style="color:#000">Média 1º tempo</h3>
                         <div class="item-desc">
-                     
+
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -243,7 +243,7 @@
                     <div class="item-inner">
                         <h3 class="item-title" style="color:#000">Média 2º tempo</h3>
                         <div class="item-desc">
-                        
+
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -251,7 +251,7 @@
                     <div class="item-inner">
                         <h3 class="item-title" style="color:#000">Média total</h3>
                         <div class="item-desc">
-                            
+
                         </div><!--//item-desc-->
                     </div><!--//item-inner-->
                 </div><!--//item-->
@@ -264,10 +264,10 @@
                     </div><!--//item-inner-->
                 </div><!--//item-->
             </div><!--//items-wrapper-->
-           
+
         </div><!--//container-->
     </div><!--//about-section-->
-    
+
     <div id="ranking" class="testimonials-section">
         <div class="container">
             <h2 class="section-title text-center">Ferramenta Ao Vivo</h2>
@@ -288,7 +288,7 @@
             </div>
         </div><!--//container-->
     </div><!--//testimonials-->
-    
+
     <div id="pricing" class="pricing-section">
         <div class="container text-center">
             <h2 class="section-title">Nossos planos</h2>
@@ -304,9 +304,9 @@
                             <li class="mb-2"><i class="fa fa-check"></i> Tudo liberado</li>
                             <li class="mb-2"><i class="fa fa-calendar"></i> Válido por 1 dia</li>
                         </ul>
-                        
+
                         <a class="btn btn-cta" href="<?php echo e(route('venda')); ?>">Adquirir</a>
-                        
+
                     </div><!--//item-inner-->
                 </div><!--//item-->
                 <div class="item item-3 col-md-6 col-12">
@@ -319,12 +319,12 @@
                             <li class="mb-2"><i class="fa fa-check"></i> Tudo liberado</li>
                             <li class="mb-2"><i class="fa fa-calendar"></i> Válido por 30 dias</li>
                         </ul>
-                        
+
                         <a class="btn btn-cta" href="<?php echo e(route('venda')); ?>">Adquirir</a>
                     </div><!--//item-inner-->
                 </div><!--//item-->
             </div><!--//pricing-wrapper-->
-            
+
         </div><!--//container-->
     </div><!--//pricing-section-->
     <div id="contact" class="contact-section">
@@ -332,32 +332,32 @@
             <h2 class="section-title">Contato</h2>
             <div class="contact-content">
                 <p>Para tirar alguma dúvida ou mandar sugestões entre em contato.</p>
-                
+
             </div>
             <a class="btn btn-cta btn-success" href="#"><i class="fa fa-commenting-o"></i> E-mail - wacornerstats@gmail.com</a>
             <a class="btn btn-cta btn-primary" href="https://t.me/wacorner"><i class="fa fa-bullhorn"></i> Telegram</a>
             <a class="btn btn-cta btn-danger" href="https://www.youtube.com/channel/UCFETZpCgwV52YLG-evfAvow"><i class="fa fa-youtube-play"></i> Canal no Youtube</a>
-            
+
         </div><!--//container-->
     </div><!--//contact-section-->
-    
+
     <footer class="footer text-center">
         <div class="container">
             <!--/* This template is released under the Creative Commons Attribution 3.0 License. Please keep the attribution link below when using for your own project. Thank you for your support. :) If you'd like to use the template without the attribution, you can buy the commercial license via our website: themes.3rdwavemedia.com */-->
             <small class="copyright">Designed with <i class="fas fa-heart"></i> by <a href="https://themes.3rdwavemedia.com/" target="_blank">Xiaoying Riley</a> for developers</small>
-            
-            
+
+
         </div><!--//container-->
     </footer>
-     
-    
-    <!-- Javascript -->          
-    
+
+
+    <!-- Javascript -->
+
     <script type="text/javascript" src="<?php echo e(asset('assets/plugins/jquery-3.3.1.min.js')); ?>"></script>
     <script type="text/javascript" src="<?php echo e(asset('assets/plugins/bootstrap/js/bootstrap.min.js')); ?>"></script>
-    <script type="text/javascript" src="<?php echo e(asset('assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js')); ?>"></script>     
-    <script type="text/javascript" src="<?php echo e(asset('assets/js/main.js')); ?>"></script> 
-    
+    <script type="text/javascript" src="<?php echo e(asset('assets/plugins/jquery-scrollTo/jquery.scrollTo.min.js')); ?>"></script>
+    <script type="text/javascript" src="<?php echo e(asset('assets/js/main.js')); ?>"></script>
+
 </body>
-</html> 
+</html>
 

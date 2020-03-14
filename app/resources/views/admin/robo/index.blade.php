@@ -26,57 +26,76 @@
 			<tbody>
 				@if($robos->count() != 0)
 					@foreach($robos as $robo)
+                        <?php
+                            if($robo->nome == "Funil WAcorner")
+                                $achou = true;
+                        ?>
 						<tr>
-							<td>{{$robo->nome}}</td>					
+							<td>{{$robo->nome}}</td>
 							<td>{{$robo->status == 0 ? 'Desativado' : 'Ativo'}}</td>
-							@if($robo->status == '0')					
-								<td><a href="{{route('robos.alterar.status',['id' => $robo->id])}}" class="btn btn-primary">Ativar</a></td>		
+							@if($robo->status == '0')
+								<td><a href="{{route('robos.alterar.status',['id' => $robo->id])}}" class="btn btn-primary">Ativar</a></td>
 							@else
 								<td>
 									<a href="{{route('robos.alterar.status',['id' => $robo->id])}}" class="btn btn-danger">Desativar</a>
-									<a href="{{route('robos.edit',['id' => $robo->id])}}" class="btn btn-warning">Configurar</a>
-									<a href="{{route('robos.send.list',['id' => $robo->id,'data' => date('Y-m-d')])}}" class="btn btn-info">Lista de hoje</a>
-									<a href="{{route('robos.send.list',['id' => $robo->id,'data' => date('Y-m-d', strtotime('+1 days')) ])}}" class="btn btn-info">Lista de amanhã</a>
-								</td>		
+									@if($robo->nome != "Funil WAcorner")
+                                        <a href="{{route('robos.edit',['id' => $robo->id])}}" class="btn btn-warning">Configurar</a>
+                                        <a href="{{route('robos.send.list',['id' => $robo->id,'data' => date('Y-m-d')])}}" class="btn btn-info">Lista de hoje</a>
+                                        <a href="{{route('robos.send.list',['id' => $robo->id,'data' => date('Y-m-d', strtotime('+1 days')) ])}}" class="btn btn-info">Lista de amanhã</a>
+                                    @endif
+                                </td>
 							@endif
 						</tr>
 					@endforeach
+                    @if(!isset($achou))
+                        <tr>
+                            <td>Funil WAcorner</td>
+                            <td>Desativado</td>
+                            <td><a href="{{route('robos.alterar.status',['id' => -1])}}" class="btn btn-primary">Ativar</a></td>
+                        </tr>
+                    @endif
 				@else
 					<tr>
-						<td>HT1020</td>					
-						<td>Desativado</td>					
-						<td><a href="{{route('robos.create.nome',['nome' => 'HT1020'])}}" class="btn btn-primary">Ativar</a></td>	
+						<td>HT1020</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.create.nome',['nome' => 'HT1020'])}}" class="btn btn-primary">Ativar</a></td>
 					</tr>
 					<tr>
-						<td>HT35</td>					
-						<td>Desativado</td>					
-						<td><a href="{{route('robos.create.nome',['nome' => 'HT35'])}}" class="btn btn-primary">Ativar</a></td>	
+						<td>HT35</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.create.nome',['nome' => 'HT35'])}}" class="btn btn-primary">Ativar</a></td>
 					</tr>
 					<tr>
-						<td>HT38</td>					
-						<td>Desativado</td>					
-						<td><a href="{{route('robos.create.nome',['nome' => 'HT38'])}}" class="btn btn-primary">Ativar</a></td>	
+						<td>HT38</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.create.nome',['nome' => 'HT38'])}}" class="btn btn-primary">Ativar</a></td>
 					</tr>
 					<tr>
-						<td>FT75</td>					
-						<td>Desativado</td>					
-						<td><a href="{{route('robos.create.nome',['nome' => 'FT75'])}}" class="btn btn-primary">Ativar</a></td>	
+						<td>FT75</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.create.nome',['nome' => 'FT75'])}}" class="btn btn-primary">Ativar</a></td>
 					</tr>
 					<tr>
-						<td>FT82</td>					
-						<td>Desativado</td>					
-						<td><a href="{{route('robos.create.nome',['nome' => 'FT82'])}}" class="btn btn-primary">Ativar</a></td>	
+						<td>FT82</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.create.nome',['nome' => 'FT82'])}}" class="btn btn-primary">Ativar</a></td>
 					</tr>
 					<tr>
-						<td>FT88</td>					
-						<td>Desativado</td>					
-						<td><a href="{{route('robos.create.nome',['nome' => 'FT88'])}}" class="btn btn-primary">Ativar</a></td>	
+						<td>FT88</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.create.nome',['nome' => 'FT88'])}}" class="btn btn-primary">Ativar</a></td>
+					</tr>
+                    <tr>
+						<td>Funil WAcorner</td>
+						<td>Desativado</td>
+						<td><a href="{{route('robos.alterar.status',['id' => -1])}}" class="btn btn-primary">Ativar</a></td>
 					</tr>
 				@endif
+
 			</tbody>
 		</table>
-		
+
 	</div>
 </div>
-    
+
 @stop

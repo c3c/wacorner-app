@@ -1,74 +1,110 @@
-version: "3.4"
+version: "3.1"
 services:
-  reverse-proxy:
-    image: traefik:v2.0
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker"
-      # - "--log.level=DEBUG"
-      # - "--api.insecure=true"
-      # - "--providers.docker=true"
-      # - "--providers.docker.endpoint='unix:///var/run/docker.sock'"
-      # - "--providers.docker.swarmMode=true"
-      # - "--providers.docker.exposedbydefault=true"
-      # - "--entrypoints.web.address=:80"
-      # - "--entryPoints.websecure.address=:443"
-      # - "--certificatesresolvers.sample.acme.tlschallenge=true"
-      # - "--certificatesResolvers.sample.acme.email='wacornerstats@gmail.com'"
-      # - "--certificatesResolvers.sample.acme.storage='/etc/traefik/acme'"
-      # - "--certificatesResolvers.sample.acme.httpChallenge.entryPoint=web"
-      # - "--certificatesresolvers.sample.acme.dnschallenge=true"
-      # - "--certificatesResolvers.sample.acme.dnsChallenge.provider=cloudflare"
-      # - "--certificatesResolvers.sample.acme.dnsChallenge.delayBeforeCheck=0"
-      # - "--log.level=DEBUG"
-    ports:
-      - "80:80"
-      - "8080:8080"
-      # - "443:443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      # - "./certificates/:/etc/traefik/acme"
-    # networks:
-    #   - traefik
-    # deploy:
-    #   replicas: 1
-    #   placement:
-    #     constraints:
-    #       - node.role == manager
+##################################################
+#                   REDIS                        #
+##################################################
+    redis:
+      image: redis:alpine
+      container_name: redis
+      restart: always
+      ports:
+        - "6378:6379"
+      networks:
+        - app-network 
+##################################################
+#                 PHPMYADMIN                     #
+##################################################
+    phpmyadmin:
+      image: bitnami/phpmyadmin:latest
+      environment:
+        - PHPMYADMIN_ALLOW_ARBITRARY_SERVER=true
+      ports:
+        - "8081:80"
+      networks:
+        - app-network
 
-  whoami:
-    image: "containous/whoami"
-  #   container_name: "simple-service"
-    labels:
-      - "traefik.http.routers.whoami.rule=Host(`whoami.docker.localhost`)"
-  #     - "traefik.http.routers.whoami.entrypoints=websecure"
-  #     - "traefik.http.routers.whoami.tls.certresolver=sample"
-  #   networks:
-  #     - traefik
-  #   deploy:
-  #     replicas: 2
-
-  # visualizer:
-  #   image: dockersamples/visualizer:stable
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   networks:
-  #     - traefik
-  #   deploy:
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
-  #     labels:
-  #     - "traefik.http.routers.visualizer.rule=Host(`console.wacorner.com`)"
-  #     - "traefik.http.routers.visualizer.entrypoints=websecure"
-  #     - "traefik.http.routers.visualizer.tls.certresolver=sample"
-  #   depends_on:
-  #     - traefik
-
-# networks:
-#   traefik:
-#     driver: overlay
-
-  
-
-
+##################################################
+#                 MYSQL                          #
+##################################################
+    mysql:
+      image: mysql:5.7
+      container_name: mysql
+      working_dir: /application
+      restart: always
+      volumes:
+        - ./.docker/dbdata:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=Moderador12@
+        - MYSQL_DATABASE=wacorner_bd
+        - MYSQL_USER=wacorner_user
+        - MYSQL_PASSWORD=Moderador12@
+      ports:
+        - "3306:3306"
+      networks:
+        - app-network
+##################################################
+#                 NGINX                          #
+##################################################
+    nginx:
+      build:
+        context: ./
+        dockerfile: Dockerfile-nginx
+      container_name: nginx
+      working_dir: /application
+      restart: always
+      volumes:
+        - ./app:/application
+      ports:
+       - "8080:80"
+      links:
+       - php-fpm
+      networks:
+        - app-network
+##################################################
+#                 SUPERVISOR                     #
+##################################################
+    supervisor:
+      build:
+        context: ./
+        dockerfile: Dockerfile-supervisor
+      container_name: supervisor
+      working_dir: /application
+      restart: always
+      # volumes:
+      #   - ./application:/application
+      ports:
+        - "9001:9001"
+      # links:
+      #   # - mysql
+      #   - redis
+      networks:
+        - app-network
+      # depends_on:
+      #   # - "mysql"
+      #   - "redis"
+##################################################
+#                 PHP-FPM                        #
+##################################################
+    php-fpm:
+      build:
+        context: ./
+        dockerfile: Dockerfile-php-fpm
+      container_name: php-fpm
+      working_dir: /application
+      volumes:
+        - ./app:/application
+      restart: always
+      networks:
+        - app-network
+      # links:
+      #   - mysql
+      #   - redis
+      # depends_on:
+      #   - "mysql"
+      #   - "redis"
+##################################################
+#              REDES DOCKER                      #
+##################################################
+networks:
+  app-network:
+    driver: bridge

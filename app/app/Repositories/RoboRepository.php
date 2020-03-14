@@ -14,13 +14,13 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use App\Models\Robo;
 
-class RoboRepository 
+class RoboRepository
 {
     protected $client;
     protected $token_api = "e019efd7a4b24af8";
 
     public function __construct(){
-    
+
         $this->client = new Client( [
             'headers' => [ 'content-type' => 'application/json', 'Accept' => 'application/json' ],
             'base_uri' => 'https://api.totalcorner.com/v1/'
@@ -28,22 +28,22 @@ class RoboRepository
     }
     private function superioridade( $jogoAoVivo )
     {
-  
+
         $pontuacaoTimeDaCasa = $jogoAoVivo->ataques[0]+$jogoAoVivo->ataques_perigosos[0]
             +$jogoAoVivo->chutes_no_gol[0]+$jogoAoVivo->chutes_para_fora[0]+$jogoAoVivo->posses[0];
-        
+
         $pontuacaoTimeDeFora = $jogoAoVivo->ataques[1]+$jogoAoVivo->ataques_perigosos[1]
             +$jogoAoVivo->chutes_no_gol[1]+$jogoAoVivo->chutes_para_fora[1]+$jogoAoVivo->posses[1];
-  
+
         if( $pontuacaoTimeDaCasa >= $pontuacaoTimeDeFora && $pontuacaoTimeDaCasa != 0 ){
             return [ round(100 - ( ( $pontuacaoTimeDeFora * 100 ) / $pontuacaoTimeDaCasa ), 1), 'casa' ];
         }else{
             if( $pontuacaoTimeDeFora != 0 )
                 return [ round( 100 - ( ( $pontuacaoTimeDaCasa * 100 ) / $pontuacaoTimeDeFora ), 1 ), 'fora' ];
         }
-  
-        return [ 0, 'casa' ];	
-        
+
+        return [ 0, 'casa' ];
+
     }
 
     public function rodarRobos()
@@ -56,18 +56,18 @@ class RoboRepository
                                                 shotOn,shotOff,possession");
 
             $jogosDaApi = json_decode( $dadosDaApi->getBody()->getContents() );
-                
-            					
+
+
             if( !isset( $jogosDaApi->success ) || $jogosDaApi->success == 0 )
             {
                 echo "\n ( ".$jogosDaApi->error->code." ) ".$jogosDaApi->error->message;
                 sleep( 60 );
                 $this->rodarRobos();
-            
+
             } else {
-                if ( !Cache::has( 'robos-ativos-wacorner' ) ) 
+                if ( !Cache::has( 'robos-ativos-wacorner' ) )
                 {
-                    $data_hj = new Carbon(date('Y-m-d')); 
+                    $data_hj = new Carbon(date('Y-m-d'));
                     $robos = Robo::where('status','=','1')->get();
                     $robos_ativos = array();
                     foreach($robos as $robo){
@@ -77,9 +77,9 @@ class RoboRepository
                     }
                     Cache::put( 'robos-ativos-wacorner', $robos_ativos, 1 );
                 }
-               
+
                 foreach($jogosDaApi->data as $jogoDaApi){
-                    if ( !Cache::has( 'jogo_id_api'.$jogoDaApi->id ) ) 
+                    if ( !Cache::has( 'jogo_id_api'.$jogoDaApi->id ) )
                     {
                         Cache::put( 'jogo_id_api'.$jogoDaApi->id, Jogo::where( 'id_api', $jogoDaApi->id )->first(), 90 );
                     }
@@ -87,8 +87,8 @@ class RoboRepository
                     $jogo = Cache::get( 'jogo_id_api'.$jogoDaApi->id );
 
                     if ( $jogo!=null )
-                    {	
-                       
+                    {
+
                         $jogoAoVivo                     = new Live();
                         $jogoAoVivo->jogo               = $jogo->load( 'liga', 'time_casa', 'time_fora' )
                                                                 ->toArray();
@@ -104,17 +104,18 @@ class RoboRepository
                         $jogoAoVivo->odds               = isset($jogoDaApi->p_odds) ? $jogoDaApi->p_odds : [0,0];
                         $jogoAoVivo->ataques            = isset($jogoDaApi->attacks) ? $jogoDaApi->attacks : [0,0];
                         $jogoAoVivo->ataques_perigosos  = isset($jogoDaApi->dang_attacks) ? $jogoDaApi->dang_attacks : [0,0];
-                        $jogoAoVivo->chutes_no_gol      = isset($jogoDaApi->shot_on) ? $jogoDaApi->shot_on : [0,0]; 
+                        $jogoAoVivo->chutes_no_gol      = isset($jogoDaApi->shot_on) ? $jogoDaApi->shot_on : [0,0];
                         $jogoAoVivo->chutes_para_fora   = isset($jogoDaApi->shot_off) ? $jogoDaApi->shot_off : [0,0];
-                        $jogoAoVivo->posses             = isset($jogoDaApi->possess) ? $jogoDaApi->possess : [0,0]; 
-                        $jogoAoVivo->eventos            = isset($jogoDaApi->events) ? $jogoDaApi->events : [];             
+                        $jogoAoVivo->posses             = isset($jogoDaApi->possess) ? $jogoDaApi->possess : [0,0];
+                        $jogoAoVivo->eventos            = isset($jogoDaApi->events) ? $jogoDaApi->events : [];
                         $jogoAoVivo->superioridade      = $this->superioridade( $jogoAoVivo );
 
                         $diferenca_gols = $jogoAoVivo->r_casa > $jogoAoVivo->r_fora ? ($jogoAoVivo->r_casa - $jogoAoVivo->r_fora) : ($jogoAoVivo->r_fora - $jogoAoVivo->r_casa);
-                        $this->roboColombiano($jogoAoVivo, $diferenca_gols);
+
                         if ( Cache::has( 'robos-ativos-wacorner' ) ) {
 
                             $robos_ativos = Cache::get( 'robos-ativos-wacorner' );
+                            $this->roboColombiano($jogoAoVivo, $diferenca_gols, $robos_ativos);
                             if($robos_ativos != null && $robos_ativos != ''){
                                 $robos = Robo::whereIn('id',$robos_ativos)
                                     ->where('intervalo_inicio','<',intval($jogoAoVivo->tempo)+1)
@@ -122,9 +123,9 @@ class RoboRepository
                                     ->where('escanteios_min','<',$jogoAoVivo->c_casa+$jogoAoVivo->c_fora+1)
                                     ->where('diferenca_gols','>=',$diferenca_gols)
                                     ->get();
-                                
+
                                 foreach ($robos as $key => $robo) {
-                                    if ( !Cache::has( 'jogo_id'.$jogo->id.'estrategia'.$robo->nome."_".$robo->user_id ) ) {                    
+                                    if ( !Cache::has( 'jogo_id'.$jogo->id.'estrategia'.$robo->nome."_".$robo->user_id ) ) {
                                         $this->analisar($jogoAoVivo,$robo,$diferenca_gols);
                                     }
                                 }
@@ -144,7 +145,7 @@ class RoboRepository
     private function verificarCartaoVermelho($eventos) {
         $casa = 0;
         $fora = 0;
-        foreach ( $eventos as $evento ) { 
+        foreach ( $eventos as $evento ) {
             if( $evento->tp == 'rc' ){
                 if($evento->h == 'h') {
                     $casa++;
@@ -156,16 +157,16 @@ class RoboRepository
         return [$casa, $fora];
     }
 
-    private function roboColombiano($jogoAoVivo, $diferenca_gols) {
+    private function roboColombiano($jogoAoVivo, $diferenca_gols, $robos_ativos) {
         $notificacao = JogoNotificado::where( 'estrategia', "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'] )->first();
         if($notificacao == null){
             if($diferenca_gols <= 1){
                 if(($jogoAoVivo->c_casa + $jogoAoVivo->c_fora) >= 8){
-                    if(intval($jogoAoVivo->tempo)>= 80 && intval($jogoAoVivo->tempo)<=85){
-                        $primeiro_calculo_casa = $jogoAoVivo->chutes_no_gol[0] 
+                    if(intval($jogoAoVivo->tempo)>= 78 && intval($jogoAoVivo->tempo)<=84){
+                        $primeiro_calculo_casa = $jogoAoVivo->chutes_no_gol[0]
                             + $jogoAoVivo->chutes_para_fora[0]
-                            + $jogoAoVivo->c_casa; 
-                        $primeiro_calculo_fora = $jogoAoVivo->chutes_no_gol[1] 
+                            + $jogoAoVivo->c_casa;
+                        $primeiro_calculo_fora = $jogoAoVivo->chutes_no_gol[1]
                             + $jogoAoVivo->chutes_para_fora[1]
                             + $jogoAoVivo->c_fora;
 
@@ -175,41 +176,51 @@ class RoboRepository
                         }else{
                             $resultado_jogo = 'fora';
                         }
-                        
+
                         if($primeiro_calculo_casa >= 15 || $primeiro_calculo_fora>= 15) {
-                            $atpm_casa = $jogoAoVivo->ataques_perigosos[0]/intval($jogoAoVivo->tempo); 
-                            $atpm_fora = $jogoAoVivo->ataques_perigosos[1]/intval($jogoAoVivo->tempo); 
+                            $atpm_casa = $jogoAoVivo->ataques_perigosos[0]/intval($jogoAoVivo->tempo);
+                            $atpm_fora = $jogoAoVivo->ataques_perigosos[1]/intval($jogoAoVivo->tempo);
                             if($atpm_casa>= 1 || $atpm_fora >= 1) {
-                                if(($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa') || 
+                                if(($primeiro_calculo_casa > $primeiro_calculo_fora && $resultado_jogo != 'casa') ||
                                     ($primeiro_calculo_fora > $primeiro_calculo_casa && $resultado_jogo != 'fora')){
-                                        $texto_colombiano = 
+                                        $texto_colombiano =
                                         "*⚽️Jogo:* ".$jogoAoVivo->jogo['time_casa']['nome']." *".$jogoAoVivo->r_casa."* x *".$jogoAoVivo->r_fora."* ".$jogoAoVivo->jogo['time_fora']['nome'].
                                         "*\n🏆Liga:* ".$jogoAoVivo->jogo['liga']['l'].
                                         "*\n⏰Tempo:* ".$jogoAoVivo->tempo;
                                         $result = $this->verificarCartaoVermelho($jogoAoVivo->eventos);
-                                        if($result[0] != 0){
-                                            $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s)";
+
+                                        if($resultado_jogo != "casa" && $result[0] != 0){
+                                            $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s), MAS está 🌟 MELHOR 🌟 no jogo!";
+                                        } else if ($resultado_jogo != "fora" && $result[1] != 0){
+                                            $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[1]." jogador(es) expulso(s), MAS está 🌟 MELHOR 🌟 no jogo!";
+                                        } else if($result[0] != 0){
+                                            $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s)!";
+                                        } else if($result[1] != 0){
+                                            $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[1]." jogador(es) expulso(s)";
                                         }
-                                        if($result[1] != 0){
-                                            $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[0]." jogador(es) expulso(s)";
+
+                                        // $texto_colombiano .=
+                                        // "*\n\n💙 Casa - 1º calculo:* ".$primeiro_calculo_casa.
+                                        // "*\n💛 Fora - 1º calculo:* ".$primeiro_calculo_fora.
+                                        // "*\n\n💙 Casa - ATPM:* ".$atpm_casa.
+                                        // "*\n💛 Fora - ATPM:* ".$atpm_fora;
+                                        foreach( $robos_ativos as $robo) {
+                                            if($robo->nome == "Funil WAcorner"){
+                                                Telegram::sendMessage([
+                                                    // 'chat_id' => '-1001231370685', CHAT PARA CANAL DO FUNIL WACORNER
+                                                    'chat_id' => $robo->user->telegram_chat_id,
+                                                    'parse_mode' => 'Markdown',
+                                                    'text' => $texto_colombiano,
+                                                ]);
+                                                JogoNotificado::create([
+                                                    'jogo_id' 		=> 1,
+                                                    'estrategia'	=> "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
+                                                    'robo_id'       => 1,
+                                                    'status'        => 'nova',
+                                                ]);
+                                                sleep(0.05);
+                                            }
                                         }
-                        
-                                        $texto_colombiano .=
-                                        "*\n\n💙 Casa - 1º calculo:* ".$primeiro_calculo_casa.
-                                        "*\n💛 Fora - 1º calculo:* ".$primeiro_calculo_fora.
-                                        "*\n\n💙 Casa - ATPM:* ".$atpm_casa.
-                                        "*\n💛 Fora - ATPM:* ".$atpm_fora;
-                                        Telegram::sendMessage([
-                                            'chat_id' => '-1001231370685', 
-                                            'parse_mode' => 'Markdown',
-                                            'text' => $texto_colombiano,	  
-                                        ]);
-                                        JogoNotificado::create([
-                                            'jogo_id' 		=> 1,
-                                            'estrategia'	=> "colômbia - ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome'],
-                                            'robo_id'       => 1,
-                                            'status'        => 'nova',
-                                        ]);
                                 }
                             }
                         }
@@ -263,8 +274,8 @@ class RoboRepository
         return false;
     }
     public function analisar($live,$robo,$diferenca_gols)
-    {                       
-        
+    {
+
         if($this->analise_pre($live->jogo,$robo) == true){
 
             $situacao_jogo = $this->situacao($live,$diferenca_gols);
@@ -283,19 +294,19 @@ class RoboRepository
                     if($situacao_jogo != 'g' && $situacao_jogo != 'jogo-parelho'){
                         if($menor_odd == $live->superioridade[1]){
                             if($live->superioridade[0] >= $robo->superioridade){
-                                
+
                                     $jogo = Jogo::find($live->jogo['id']);
                                     if($jogo != null){
                                         if($robo->user->telegram_chat_id != null){
-                                            $this->enviarMensagemBot($robo,$menor_odd,strtolower($robo->nome),$live,$difenca_odds,$live->superioridade); 
+                                            $this->enviarMensagemBot($robo,$menor_odd,strtolower($robo->nome),$live,$difenca_odds,$live->superioridade);
                                             return true;
                                         }
                                     }
                                 }
                         }
                     }
-                } 
-            }  
+                }
+            }
         }
         return true;
     }
@@ -358,7 +369,7 @@ class RoboRepository
         }
         $texto .= "\n*🏆Liga:* ".$live->jogo['liga']['l'];
         $texto .= "\n*⛳️Escanteios:* ".$live->c_casa." - ".$live->c_fora;
-        
+
         if($sup[1] == 'casa'){
             $texto .= "\n*💚Superioridade:* ".$sup[0]."% (CASA)";
         }else{
@@ -374,7 +385,7 @@ class RoboRepository
         $texto .= "\nMedia Contra: ".$live->jogo[$estrategia."_media_contra_fora"]." cantos";
         $texto .= "\n\n⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠";
 
-        
+
 
         //FT75 -> '-1001231370685'
         //FT82 -> '-1001175360624.0'
@@ -399,10 +410,10 @@ class RoboRepository
         $total_jogos = 0;
         $texto = "";
         foreach($jogos as $jogo){
-            
+
             $jogo = $jogo->load( 'liga', 'time_casa', 'time_fora' )->toArray();
             if($this->analise_pre($jogo,$robo)){
-                
+
                 $total_jogos += 1;
                 $n += 1;
                 if($jogo['favorito'] == null && $jogo['super_favorito'] == null){
@@ -417,7 +428,7 @@ class RoboRepository
                 }
                 $texto .= "\n--------------------------------------\n";
             }
-            
+
             if($n >= 15){
                 if($total_jogos>=30){
                     $robo->user->sendMenssageTelegram(
@@ -435,7 +446,7 @@ class RoboRepository
                 $texto = "";
             }
         }
-     
+
         if($n != 0){
             if($total_jogos >= 15){
                 $robo->user->sendMenssageTelegram(
