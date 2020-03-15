@@ -218,6 +218,8 @@ class RoboRepository
                                                 );
 
                                                 Cache::add('jogo_id'.$jogoAoVivo->jogo['id'].'estrategia'.$robo->nome." FT _".$robo->user_id,1,90);
+                                                $agora  = new Carbon;
+                                                echo "\nData:".$agora." - Jogo ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome']." ENVIDADO para robô ".$robo->nome." de ".$robo->user->email;
                                             }
                                         }
                                     }
@@ -286,6 +288,8 @@ class RoboRepository
                                                     );
 
                                                     Cache::add('jogo_id'.$jogoAoVivo->jogo['id'].'estrategia'.$robo->nome." HT _".$robo->user_id,1,90);
+                                                    $agora  = new Carbon;
+                                                    echo "\nData:".$agora." - Jogo ".$jogoAoVivo->jogo['time_casa']['nome']." x ".$jogoAoVivo->jogo['time_fora']['nome']." ENVIDADO para robô ".$robo->nome." de ".$robo->user->email;
                                                 }
                                             }
                                         }
@@ -465,7 +469,7 @@ class RoboRepository
 
         Cache::add('jogo_id'.$live->jogo['id'].'estrategia'.$robo->nome."_".$robo->user_id,1,90);
         $agora  = new Carbon;
-        echo "\nData:".$agora." - Jogo ".$live->jogo['time_casa']['nome']." x ".$live->jogo['time_fora']['nome']." ENVIDADO para-> ".$robo->user->email;
+        echo "\nData:".$agora." - Jogo ".$live->jogo['time_casa']['nome']." x ".$live->jogo['time_fora']['nome']." ENVIDADO para robô ".$robo->nome." de ".$robo->user->email;
     }
 
     public function sendListPre($robo,$data){
