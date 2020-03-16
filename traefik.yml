@@ -90,6 +90,8 @@ services:
      - TELESCOPE_ENABLED=false
      - CACHE_DRIVER=redis
      - SESSION_DRIVER=file
+    volumes:
+      - ./app:/application
     networks:
       - traefik-default
       - traefik-public
