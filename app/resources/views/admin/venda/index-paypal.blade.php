@@ -10,7 +10,7 @@
       @endif
   @endif
 
-  <script src="https://www.paypal.com/sdk/js?client-id=AXmIWrmocDUD9Oe1XOlrTSn0opLDlusCxCir28M8j5BgH6MEOHHa2nXix3qXYsYUSQw5ggSpwBjU8Pwg"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AaxydXra_SrRY4l0Hmha4Vpp46MuC1brc9k5UAxb1K1N6foI5qLx2BAGbcbVNTeq8K9pPEz6X26AcHoP"></script>
 
 @stop
 
