@@ -49,7 +49,7 @@ services:
           constraints: 
             - node.role == manager
   supervisor:
-    image: wesleyvieira12/wacorner-supervisor:v21
+    image: wesleyvieira12/wacorner-supervisor:v22
     networks:
       - traefik-default
       - traefik-public
@@ -82,7 +82,7 @@ services:
       - mysql
     
   php-fpm:
-    image: wesleyvieira12/wacorner-php-fpm:v25
+    image: wesleyvieira12/wacorner-php-fpm:v26
     environment:
      - APP_DEBUG=false
      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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

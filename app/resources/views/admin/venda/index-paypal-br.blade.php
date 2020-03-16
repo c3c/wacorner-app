@@ -10,7 +10,7 @@
       @endif
   @endif
 
-  <script src="https://www.paypal.com/sdk/js?client-id=AXmIWrmocDUD9Oe1XOlrTSn0opLDlusCxCir28M8j5BgH6MEOHHa2nXix3qXYsYUSQw5ggSpwBjU8Pwg"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AXmIWrmocDUD9Oe1XOlrTSn0opLDlusCxCir28M8j5BgH6MEOHHa2nXix3qXYsYUSQw5ggSpwBjU8Pwg&currency=BRL"></script>
 
 @stop
 
@@ -30,7 +30,7 @@
 		<p><b>(*)</b>Campos obrigratórios caso esteja habilitado para preenchimento.</p>
         @if($profissional != true)
 			<div class="col-md-6">
-                <form-paypal profissional="{{$profissional}}" pais="EUA" url_obrigado_profissional="{{route('venda.paypal.new',['plano' => 'profissional'])}}" email="{{auth()->user()->email}}"></form-paypal>
+                <form-paypal profissional="{{$profissional}}" pais="BRL" url_obrigado_profissional="{{route('venda.paypal.new',['plano' => 'profissional'])}}" email="{{auth()->user()->email}}"></form-paypal>
 
 		    </div>
         @else

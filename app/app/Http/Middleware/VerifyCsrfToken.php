@@ -20,6 +20,7 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         'venda/pagseguro',
+        'venda/picpay/status',
         'admin/liga/ativar',
         '/telegram/webhook'
     ];

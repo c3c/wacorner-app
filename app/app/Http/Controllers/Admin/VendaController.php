@@ -32,6 +32,18 @@ class VendaController extends Controller
         return view('admin.venda.index-picpay');
     }
 
+    public function index_paypal_br(){
+        $profissional = auth()->user()->vendas()
+        ->where('tipo_pagamento','PayPal')
+        ->where('plano','profissional')
+        ->where('status','pendente')->first();
+        if ($profissional != null)
+            $profissional = true;
+        else
+            $profissional = false;
+        return view('admin.venda.index-paypal-br',compact('basico','profissional'));
+    }
+
     public function index_cupom()
     {
         return view('admin.venda.index-cupom');
@@ -54,7 +66,7 @@ class VendaController extends Controller
             'user_id' => $usuario->id,
             'tipo_pagamento' => 'Transferência',
             'valor' => $this->plano_valor($plano,0),
-        ]);        
+        ]);
 
         $this->liberar_plano($venda->id);
 
@@ -78,7 +90,7 @@ class VendaController extends Controller
         //     if($afiliado != null){
         //         $afiliado->addSaldo($venda->valor,$this->comissao);
         //         $afiliado->notify(new NovaCompra($venda));
-        //     } 
+        //     }
         // }
 
         return back()
@@ -89,13 +101,13 @@ class VendaController extends Controller
     {
         $cupom = Cupon::where('codigo',$r->codigo)->first();
 
-        if ($cupom!=null){            
+        if ($cupom!=null){
             if(!$cupom->verificaUsuario(auth()->user()->id)){
-            
+
             }else{
                return back()
                         ->with('error','Você já utilizou um cupom promocional!');
-            }    
+            }
         }else{
             return back()
                     ->with('error','Cupom não existe!');
@@ -105,12 +117,12 @@ class VendaController extends Controller
     {
         $cupom = Cupon::where('codigo',$r->cupom_desconto)->where('tipo','desconto')->where('fim','>=',date('Y-m-d'))->first();
 
-        if ($cupom!=null){            
+        if ($cupom!=null){
             if(!$cupom->verificaUsuario(auth()->user()->id)){
                 return ['erro' => 0, 'resultado' => $cupom];
             }else{
                return ['erro' => 'Você já utilizou um cupom promocional!'];
-            }    
+            }
         }else{
             return ['erro' => 'Cupom não existe!'];
         }
@@ -121,14 +133,14 @@ class VendaController extends Controller
         if ($plano != null) {
             $venda = auth()->user()->vendas()->firstOrCreate([
                 'plano' => $plano,
-                'referencia' => "cartão", 
+                'referencia' => "cartão",
                 'status' => "pendente",
                 'valor' => $this->plano_valor($plano,$desconto),
                 'tipo_pagamento' => "PayPal",
             ]);
 
             $this->liberar_plano($venda->id);
-        
+
             return redirect()
                     ->route('venda.obrigado',['tipo' => 'PayPal']);
         }
@@ -137,21 +149,21 @@ class VendaController extends Controller
         ->where('tipo_pagamento','PayPal')
         ->where('plano','profissional')
         ->where('status','pendente')->first();
-        if ($profissional != null) 
+        if ($profissional != null)
             $profissional = true;
         else
             $profissional = false;
 
-        
+
         return view('admin.venda.index-paypal',compact('basico','profissional'));
-        
+
     }
 
     public function show($id=null){
         if(auth()->user()->admin == 1){
             if($id!=null){
-                $usuario = User::find($id); 
-                $vendas = $usuario->vendas()->paginate(30); 
+                $usuario = User::find($id);
+                $vendas = $usuario->vendas()->paginate(30);
                 if($vendas->count() < 1)
                     return redirect()
                             ->route('usuario')
@@ -164,12 +176,12 @@ class VendaController extends Controller
         }
 
         $data = (Carbon::now())->subYear()->format('Y-m');
-        
-        $vendasAno = Venda::whereDate('created_at','>=',$data.'-01')->where('status','Paga')->get(); 
+
+        $vendasAno = Venda::whereDate('created_at','>=',$data.'-01')->where('status','Paga')->get();
         $mesAno = array();
         $num_vendas_basico = array();
         $num_vendas_profissional = array();
-        
+
         foreach ($vendasAno as $key => $venda) {
             $data_venda = new Carbon($venda->created_at);
             if (in_array($data_venda->format('m/Y'), $mesAno))
@@ -186,7 +198,7 @@ class VendaController extends Controller
                 }
 
             }else{
-            
+
                 array_push($mesAno,$data_venda->format('m/Y'));
 
                 if ($venda->plano == 'basico')
@@ -198,26 +210,26 @@ class VendaController extends Controller
                 {
                     array_push($num_vendas_profissional,1);
                 }
-                
+
             }
-            
+
         }
-        
+
         $total_basico = Venda::where('plano','basico')->where('status','Paga')->count();
         $total_profissional = Venda::where('plano','profissional')->where('status','Paga')->count();
         $total_pendente = Venda::where('status','pendente')->count();
         $total_usuarios = User::whereDate('data_expiracao','>=',date('Y-m-d'))->count();
         $info_grafico_por_plano = ['mesAno'=> $mesAno,'num_vendas_basico'=>$num_vendas_basico,'num_vendas_profissional'=>$num_vendas_profissional];
-       
+
         return view('admin.venda.show',compact('vendas','total_usuarios','total_basico','total_profissional','total_pendente','info_grafico_por_plano'));
-    
+
     }
 
     public function status(Request $r,Venda $v){
         $pagseguro = PagSeguro::notification($r->notificationCode, $r->notificationType);
 
         $venda = $v->find(intval($pagseguro->reference));
-        
+
         if($venda == null){
             $user = User::where('email',$pagseguro->sender->email)->first();
 
@@ -225,32 +237,32 @@ class VendaController extends Controller
             $venda->id = $pagseguro->reference;
             $venda->user_id = $user->id;
             if(strtolower($pagseguro->items[0]->item->description) == 'plano profissional'){
-                $venda->plano = 'profissional'; 
+                $venda->plano = 'profissional';
                 $venda->valor = $pagseguro->items[0]->item->amount;
             }else{
                 $venda->plano = 'basico';
                 $venda->valor = $pagseguro->items[0]->item->amount;
             }
-            
+
             $venda->referencia = null;
             $venda->status = 'pendente';
-            $venda->tipo_pagamento = $pagseguro->paymentmethod->type == 2 ? 'boleto' : 'cartão'; 
+            $venda->tipo_pagamento = $pagseguro->paymentmethod->type == 2 ? 'boleto' : 'cartão';
             $venda->save();
 
-            
+
 
         }
 
         if(intval($pagseguro->status) == 3){
-           
-            
-            
+
+
+
                 if($venda->status != 'Paga')
-                {       
-                    
+                {
+
                     $this->liberar_plano($venda->id);
                 }
-            
+
 
         }else if(intval($pagseguro->status) == 5 || intval($pagseguro->status) == 6 || intval($pagseguro->status) == 7){
             $venda_aux = $venda;
@@ -272,31 +284,31 @@ class VendaController extends Controller
             //             $afiliado->removerSaldo($venda->valor*$this->comissao);
             //         }
             //     }
-            // } 
+            // }
         }
     }
 
     public function compra(Request $r){
         $data_expiracao = new Carbon(auth()->user()->data_expiracao);
         $data_hj = new Carbon(date('Y-m-d'));
-        
+
         //verifica se ainda não utilizou o plano gratís
         if(auth()->user()->data_expiracao==null && $r->plano == 'gratis'){
-            
+
             auth()->user()->renovacaoGratis();
             return redirect('admin')
                         ->with('success','Plano grátis ativado.');
 
         //verifica se utilizou o plano gratís
         }else if(auth()->user()->data_expiracao!=null && $r->plano == 'gratis'){
-            
+
             return redirect()
                         ->route('venda')
                         ->with('error','Você não pode utilizar mais este plano.');
 
         //AQUI COMEÇA A PARTE DA COMPRA DE UM PLANO
         }else{
-           
+
            if($r->tipo_pagamento == 'boleto'){
                 $venda = auth()->user()->vendas()->firstOrCreate([
                     'plano' => $r->plano,
@@ -311,7 +323,7 @@ class VendaController extends Controller
                     return redirect()
                         ->route('venda')
                         ->with('error',"Já existe uma compra para este plano ".$r->plano." e tipo de pagamento: '".$venda->tipo_pagamento."' com pagamento PENDENTE, vá no menu 'PLANO > Histórico' e pague seu boleto!");
-           
+
            }else{
 
                  $v = Validator::make($r->all(), [
@@ -346,7 +358,7 @@ class VendaController extends Controller
                             ->route('venda')
                             ->with('error',"Já existe uma compra para este plano ".$r->plano." e tipo de pagamento: '".$venda->tipo_pagamento."' com pagamento PENDENTE, esperando a empresa de cartão de crédito liberar o pagamento!");
                 }
-           } 
+           }
 
            if($retorno['status'] == 'error'){
                 $venda->delete();
@@ -354,11 +366,11 @@ class VendaController extends Controller
                 if(isset($retorno['erro_cpf'])){
                     return redirect()
                     ->route('venda')
-                    ->with('error','Seu CPF está incorreto, por favor vá em seu PERFIL e atualize o CPF para poder comprar no boleto.');    
+                    ->with('error','Seu CPF está incorreto, por favor vá em seu PERFIL e atualize o CPF para poder comprar no boleto.');
                 }
                 return redirect()
                     ->route('venda')
-                    ->with('error',"Erro do PAGSEGURO - Codigo: ".$retorno['retorno']->getCode()." - ".$retorno['retorno']->getMessage().". Alguns soluções: Atualizar a pagina ou verificar se os dados enviar estão corretos, caso não consiga resolver entre em contato conosco."); 
+                    ->with('error',"Erro do PAGSEGURO - Codigo: ".$retorno['retorno']->getCode()." - ".$retorno['retorno']->getMessage().". Alguns soluções: Atualizar a pagina ou verificar se os dados enviar estão corretos, caso não consiga resolver entre em contato conosco.");
            }else{
                 if($r->tipo_pagamento == 'boleto'){
                 $venda->referencia = $retorno['retorno']."";
@@ -373,15 +385,15 @@ class VendaController extends Controller
                     return redirect()
                     ->route('venda')
                     ->with('success',$retorno['retorno']."");
-                } 
+                }
            }
-           
+
         }
     }
 
     public function delete($id){
         $venda = Venda::where('id',$id)->first();
-        
+
         if($venda->status == 'Paga'){
             $venda->user->cancelarRenovacao($venda);
 
@@ -390,11 +402,11 @@ class VendaController extends Controller
             //     $afiliado = User::find($venda->user->user_id);
             //     if($afiliado != null){
             //         $afiliado->removerSaldo($venda->valor*$this->comissao);
-            //     } 
+            //     }
             // }
         }
         $venda->delete();
-        
+
         return redirect()->route('venda.show');
     }
 
@@ -407,7 +419,7 @@ class VendaController extends Controller
 
             if (isset($data['data_fim']))
                 $query->whereDate('created_at','<=',$data['data_fim']);
-            
+
             if (isset($data['tipo_pagamento']))
                 $query->where('tipo_pagamento',$data['tipo_pagamento']);
 
@@ -422,7 +434,7 @@ class VendaController extends Controller
     public function obrigado($tipo){
         $tipo_pagamento = $tipo;
 
-        if($tipo == 'boleto')
+        if($tipo == 'boleto' || $tipo == 'PicPay')
             $link = auth()->user()->vendas->last()->referencia;
 
         return view('admin.venda.obrigado',compact('tipo_pagamento','link'));

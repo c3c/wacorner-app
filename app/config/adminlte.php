@@ -236,10 +236,16 @@ return [
                 ],
                 [
                     'text' => 'Pagar com PayPal',
-                    'url'  => 'admin/venda/paypal',
+                    'url'  => 'admin/venda/paypal-br/',
                     'icon' => 'paypal',
 
                 ],
+                // [
+                //     'text' => 'Pagar com PayPal',
+                //     'url'  => 'admin/venda/paypal',
+                //     'icon' => 'paypal',
+
+                // ],
                 [
                     'text' => 'Pagar com PicPay',
                     'url'  => 'admin/venda/picpay',

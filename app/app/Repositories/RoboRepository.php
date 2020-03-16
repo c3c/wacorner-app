@@ -456,6 +456,18 @@ class RoboRepository
         $texto .= "\n--------------------------------------";
         $texto .= "\nMedia Favor: ".$live->jogo[$estrategia."_media_favor_fora"]." cantos";
         $texto .= "\nMedia Contra: ".$live->jogo[$estrategia."_media_contra_fora"]." cantos";
+
+        $result = $this->verificarCartaoVermelho($live->eventos);
+
+        if($result[0] != 0){
+            $texto .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s)!";
+        }
+        if($result[1] != 0){
+            $texto .="\n🔴 Time de Fora tem ".$result[1]." jogador(es) expulso(s)";
+        }
+
+
+
         $texto .= "\n\n⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠⚠";
 
 

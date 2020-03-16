@@ -10,7 +10,7 @@ export default new Vuex.Store({
 	modules: {
 		Notifications,
 		Listas,
-		Gestoes
+        Gestoes,
 	}
 })
 

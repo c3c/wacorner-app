@@ -8,7 +8,7 @@
       <?php endif; ?>
   <?php endif; ?>
 
-  <script src="https://www.paypal.com/sdk/js?client-id=AXmIWrmocDUD9Oe1XOlrTSn0opLDlusCxCir28M8j5BgH6MEOHHa2nXix3qXYsYUSQw5ggSpwBjU8Pwg"></script>
+  <script src="https://www.paypal.com/sdk/js?client-id=AXmIWrmocDUD9Oe1XOlrTSn0opLDlusCxCir28M8j5BgH6MEOHHa2nXix3qXYsYUSQw5ggSpwBjU8Pwg&currency=BRL"></script>
 
 <?php $__env->stopSection(); ?>
 
@@ -28,7 +28,7 @@
 		<p><b>(*)</b>Campos obrigratórios caso esteja habilitado para preenchimento.</p>
         <?php if($profissional != true): ?>
 			<div class="col-md-6">
-                <form-paypal profissional="<?php echo e($profissional); ?>" pais="EUA" url_obrigado_profissional="<?php echo e(route('venda.paypal.new',['plano' => 'profissional'])); ?>" email="<?php echo e(auth()->user()->email); ?>"></form-paypal>
+                <form-paypal profissional="<?php echo e($profissional); ?>" pais="BRL" url_obrigado_profissional="<?php echo e(route('venda.paypal.new',['plano' => 'profissional'])); ?>" email="<?php echo e(auth()->user()->email); ?>"></form-paypal>
 
 		    </div>
         <?php else: ?>

@@ -1,26 +1,24 @@
-@extends('adminlte::page')
+<?php $__env->startSection('js_header'); ?>
 
-@section('js_header')
-
-  @if(auth()->check())
-      @if(auth()->user()->user_id != null)
+  <?php if(auth()->check()): ?>
+      <?php if(auth()->user()->user_id != null): ?>
         <script>
           fbq('track', 'Purchase', {
             value: 3,
           });
         </script>
-      @endif
-  @endif
+      <?php endif; ?>
+  <?php endif; ?>
 
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('content_header')
+<?php $__env->startSection('content_header'); ?>
 
 
 
-@stop
+<?php $__env->stopSection(); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <div class="box">
     	<div class="box-header">
@@ -31,23 +29,23 @@
 
                           <h1>Obrigado por adquirir um plano!</h1>
 
-                          @if ($tipo_pagamento == 'PayPal' || $tipo_pagamento == 'cartão')
+                          <?php if($tipo_pagamento == 'PayPal' || $tipo_pagamento == 'cartão'): ?>
                             <div class="alert alert-success" role="alert">
                                 <p>No maximo em 30 minutos será liberado seu plano. Caso contrario entre em contato.</p>
                             </div>
-                          @elseif($tipo_pagamento == 'PicPay')
+                          <?php elseif($tipo_pagamento == 'PicPay'): ?>
                             <div class="alert alert-success" role="alert">
-                                <a href="{{$link}}" target="_blank" class="btn btn-warning" style="text-decoration:none"> <i class="fa fa-money"></i> Clique aqui para pagar seu plano no PICPAY</a>
+                                <a href="<?php echo e($link); ?>" target="_blank" class="btn btn-warning" style="text-decoration:none"> <i class="fa fa-money"></i> Clique aqui para pagar seu plano no PICPAY</a>
                                 <hr>
                             <p>No maximo em 30 minutos será liberado seu plano. Caso contrario entre em contato!</p>
                             </div>
-                          @else
+                          <?php else: ?>
                             <div class="alert alert-success" role="alert">
-                                <a href="{{$link}}" target="_blank" class="btn btn-warning" style="text-decoration:none"> <i class="fa fa-money"></i> Clique aqui para acessar seu boleto</a>
+                                <a href="<?php echo e($link); ?>" target="_blank" class="btn btn-warning" style="text-decoration:none"> <i class="fa fa-money"></i> Clique aqui para acessar seu boleto</a>
                                 <hr>
                             <p>A confirmação de pagamento pode levar até 3 dias úteis. Por favor, esperar a liberação de forma automática!</p>
                             </div>
-                          @endif
+                          <?php endif; ?>
 
 
                     </div>
@@ -61,5 +59,7 @@
 
 
 
-@stop
+<?php $__env->stopSection(); ?>
 
+
+<?php echo $__env->make('adminlte::page', \Illuminate\Support\Arr::except(get_defined_vars(), array('__data', '__path')))->render(); ?>

@@ -5,7 +5,7 @@
 				<div class="col-md-2">
 					<h3 class="box-title"><i class="fa fa-dashboard"></i> Jogos Ao Vivo</h3>
 				</div>
-				<div class="col-md-3"> 
+				<div class="col-md-3">
 					<div class="form-group">
 						<label> Escolha a estrategia e a porcentagem:</label>
 						<select id="estrategia" class="form-control" v-model="estrategia">
@@ -57,8 +57,10 @@
 				              		<th>Gestão</th>
 				              		<th>Liga</th>
 				              		<th><i class="fa fa-flag" title="Cantos Realizados"></i></th>
-				              		<th><i class="fa fa-clock-o" title="Tempo de Jogo"></i></th>
+                                    <th><i class="fa fa-clock-o" title="Tempo de Jogo"></i></th>
+				              		<th><i class="fa fa-rocket"></i> APPM</th>
 				                  	<th>Jogo<small>(Resultado)</small></th>
+                                    <th><i class="fa fa-rocket"></i> APPM</th>
 				                  	<th>HT1020</th>
 				                  	<th>HT35</th>
 				                  	<th>HT38</th>
@@ -78,14 +80,15 @@
 			                      	<button class="btn btn-xs btn-primary flash" v-if="live.tempo == 'half'"> HT </button>
 			                      	<button class="btn btn-xs btn-primary flash" v-if="live.tempo != 'half'"> {{live.tempo}} </button>
                           		  </td>
+                                  <td><strong>{{appm_casa(live)}}</strong></td>
                           		  <td>
 			                          <strong>
 			                            <!-- <a style="color: #000;" :href="'jogo/'+live.jogo.id" target="_blank">
 			                              <span  v-if="live.superioridade[1] == 'fora' || admin != 1">{{live.jogo.time_casa.nome}}</span>
 			                               <button class="btn btn-xs btn-success" v-if="live.superioridade[1] == 'casa' && admin == 1">{{live.jogo.time_casa.nome}}<span>({{live.odds | favoritoCasa}})</span>  ({{live.superioridade[0]}}%)</button>
-			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsCasa}}</button> 
-			                              x 
-			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsFora}}</button> 
+			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsCasa}}</button>
+			                              x
+			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsFora}}</button>
 			                              <span  v-if="live.superioridade[1] == 'casa' || admin != 1">{{live.jogo.time_fora.nome}}</span>
 			                               <button class="btn btn-xs btn-success" v-if="live.superioridade[1] == 'fora'  && admin == 1"> {{live.jogo.time_fora.nome}}<span>({{live.odds | favoritoFora}})</span>  ({{live.superioridade[0]}}%)</button>
 			                            </a> -->
@@ -94,9 +97,9 @@
 			                               <button class="btn btn-xs btn-info" v-if="favorito(live) == 'casa'">{{live.odds | favoritoCasa}}</button>
 			                               <button class="btn btn-xs btn-success" v-if="live.superioridade[1] == 'casa'">  {{live.superioridade[0]}} %</button>
 			                               {{live.jogo.time_casa.nome}}
-			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsCasa}}</button> 
-			                              x 
-			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsFora}}</button> 
+			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsCasa}}</button>
+			                              x
+			                              <button class="btn btn-xs btn-danger">{{live.eventos_gols | golsFora}}</button>
 			                              {{live.jogo.time_fora.nome}} <button class="btn btn-xs btn-info" v-if="favorito(live) == 'fora'">{{live.odds | favoritoFora}}</button>
 			                               <button class="btn btn-xs btn-success" v-if="live.superioridade[1] == 'fora'">  {{live.superioridade[0]}} %</button>
 			                            </a>
@@ -106,16 +109,17 @@
 			                            </div>
 			                            <div class="progress-bar progress-bar-primary" v-if="live.tempo != 'half'" role="progressbar" :style="'width:'+parseInt(live.tempo)+'%; position: absolute; height: 50%; margin-top: 10px;'" :aria-valuenow="parseInt(live.tempo)" aria-valuemin="0" aria-valuemax="100">
 			                            </div>
-			                           	 
+
 			                            <span v-if="live.eventos" v-for='evento in live.eventos'>
 			                            	<img v-if='evento.casa == 1' :src="url_assets+'/corner-home.png'" :title="evento.t+' - '+live.jogo.time_casa.nome" :style="'position: absolute; left: '+evento.t+'%; width: 20px;'">
 			                            	<img v-if='evento.casa == 0' :src="url_assets+'/corner-aways.png'" :title="evento.t+' - '+live.jogo.time_fora.nome" :style="'position: absolute; left: '+evento.t+'%; width: 20px;'">
-           		                        </span>    
+           		                        </span>
 
 			                          </div>
 			                          <div class="progress-bar progress-bar-warning" role="progressbar" style="width:45%; height:10%; border-right:1px solid #fff;">1º Tempo</div>
 			                          <div class="progress-bar progress-bar-warning" role="progressbar" style="width:45%; height:10%;">2º Tempo</div>
 			                      </td>
+                                  <td><strong>{{appm_fora(live)}}</strong></td>
 			                      <td><span class="badge bg-green">HT1020<br>{{live.jogo.ht1020}}%</span></td>
 			                      <td><span class="badge bg-green">HT35<br>{{live.jogo.ht35}}%</span></td>
 			                      <td><span class="badge bg-green">HT38<br>{{live.jogo.ht38}}%</span></td>
@@ -136,7 +140,7 @@
 <script>
 
 	export default{
-		
+
 		mounted(){
 			this.$store.dispatch('getLista','listas');
 
@@ -159,15 +163,15 @@
 				let vm = this;
 				axios.get('jogos-ao-vivo').then(res => {
                 	vm.jogos = res.data;
-                });	
+                });
 
-                setTimeout(this.loadJogos,30000); 
+                setTimeout(this.loadJogos,30000);
 				// Echo.join('ao-vivo')
 				// 	.here(users => {
 				// 		axios.get('jogos-ao-vivo').then(res => {
     //              			vm.jogos = res.data;
     //             		});
-						
+
 				// 		console.log('here');
 				// 		console.log(users);
 				// 	})
@@ -177,13 +181,13 @@
 				// 	})
 				// 	.leaving( user => {
 				// 		console.log('leaving');
-				// 		console.log(user);	
+				// 		console.log(user);
 				// 	})
 				// 	.listen('AtualizaJogosAoVivo', e =>{
-						
+
 				//   		axios.get('jogos-ao-vivo').then(res => {
     //              			vm.jogos = res.data;
-    //             		});					  	
+    //             		});
 
 
 				// 	})
@@ -198,6 +202,20 @@
                 	});
                 });
 			},
+            appm_casa(live) {
+                if(live.tempo == "half"){
+                    return (parseInt(live.ataques_perigosos[0])/45).toFixed(2);
+                } else {
+                    return (parseInt(live.ataques_perigosos[0])/parseInt(live.tempo)).toFixed(2);
+                }
+            },
+            appm_fora(live) {
+                if(live.tempo == "half"){
+                    return (parseInt(live.ataques_perigosos[1])/45).toFixed(2);
+                } else {
+                    return (parseInt(live.ataques_perigosos[1])/parseInt(live.tempo)).toFixed(2);
+                }
+            },
 			favorito(live){
 				if(live.odds[0]>=live.odds[2]){
 					var diferenca = live.odds[0]-live.odds[2];
@@ -273,7 +291,7 @@
 				jogos_filtrados = jogos_filtrados.sort(function(a,b){
 	                if(vm.buscaJogoNaLista(a) && !vm.buscaJogoNaLista(b)){
 	                	return -1;
-	                }              
+	                }
 	                if(!vm.buscaJogoNaLista(a) && vm.buscaJogoNaLista(b)){
 	                	return 1;
 	                }
@@ -303,15 +321,15 @@
 	                	if(vm.estrategia == ''){
 	                		return true;
 	                	}
-	                } 
+	                }
 	            });
 				}
 
 				//FILTRO
 		        if(this.buscar && this.jogos){
 		            jogos_filtrados = jogos_filtrados.filter(res => {
-		                if( res.jogo.time_casa.nome.toLowerCase().indexOf(this.buscar.toLowerCase())>=0 || 
-		                    res.jogo.time_fora.nome.toLowerCase().indexOf(this.buscar.toLowerCase())>=0 || 
+		                if( res.jogo.time_casa.nome.toLowerCase().indexOf(this.buscar.toLowerCase())>=0 ||
+		                    res.jogo.time_fora.nome.toLowerCase().indexOf(this.buscar.toLowerCase())>=0 ||
 		                    res.jogo.liga.l.toLowerCase().indexOf(this.buscar.toLowerCase())>=0){
 		                    return true;
 		                }

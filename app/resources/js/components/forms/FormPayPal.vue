@@ -5,21 +5,21 @@
 					<span class="fa fa-thumbs-o-down"></span> {{erro}}
 				</p>
         </div>
-		<div class="row">
+		<!--<div class="row">
 	        <div class="form-group">
 	            <label>Escolha seu país*:</label>
 	            <br>
 	            <input type="radio" v-model="pais" @click="limparValor" value="brasil" autocomplete="off" checked>  Brasil
-	            <input type="radio" v-model="pais" @click="limparValor" value="outro" autocomplete="off"> Outro País 
+	            <input type="radio" v-model="pais" @click="limparValor" value="outro" autocomplete="off"> Outro País
 	        </div>
-	    </div>
+	    </div>-->
 		<div class="row ">
 			<div class="form-group">
 			    <label>Plano*</label>
-	            <select v-if="pais == 'brasil'"  class="form-control" v-model="plano" required>
+	            <select v-if="pais == 'BRL'"  class="form-control" v-model="plano" required>
 	                <option v-if="profissional == false" value="29.99">Profissional - R$29,99</option>
 	            </select>
-			    <select v-if="pais != 'brasil'"  class="form-control" v-model="plano" required>
+			    <select v-if="pais != 'BRL'"  class="form-control" v-model="plano" required>
 			    	<option v-if="profissional == false" value="8">Profissional - $8</option>
 			    </select>
 		    </div>
@@ -34,9 +34,9 @@
 			    </div>
 			</div>
 		</div>
-		<h4><b>País:</b> {{pais.toLowerCase()}}</h4>
-		<h4 v-if="pais == 'brasil'"><b>Valor Plano:</b> {{total}} reais</h4>
-		<h4 v-if="pais != 'brasil'"><b>Valor Plano:</b> {{total}} dolares</h4>
+		<!--<h4><b>País:</b> {{pais.toLowerCase()}}</h4>-->
+		<h4 v-if="pais == 'BRL'"><b>Valor Plano:</b> {{total}} reais</h4>
+		<h4 v-if="pais != 'BRL'"><b>Valor Plano:</b> {{total}} dolares</h4>
 		<div id="paypal-button-container"></div>
 	</div>
 </template>
@@ -46,82 +46,49 @@
 		mounted(){
 			var vm = this;
 			// Render the PayPal button
-			paypal.Button.render({
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                preloader(true);
+                var valor_plano = parseFloat(vm.total).toFixed(2);
+                var pais = vm.pais;
 
-			    // Set your environment
+                if( pais == 'EUA'){
+                    var moeda = 'USD';
+                }else{
+                    var moeda = 'BRL';
+                }
+                // This function sets up the details of the transaction, including the amount and line item details.
+                return actions.order.create({
+                    purchase_units: [{
+                    amount: {
+                        currency_code: moeda,
+                        value: valor_plano
+                    }
+                    }]
+                });
+                },
+                onApprove: function(data, actions) {
+                // This function captures the funds from the transaction.
+                return actions.order.capture().then(function(details) {
+                    // This function shows a transaction success message to your buyer.
+                    if(details.status.toLowerCase() == 'approved' || details.status.toLowerCase() == 'completed'){
+                        window.alert('Pagamento Aprovado, Plano será liberado logo em seguida!');
+                        window.location.href = vm.url_obrigado_profissional;
+                    } else if(details.status.toLowerCase() == 'created'){
+                        window.alert('Por favor entre em contato, para podermos liberar seu plano caso tenha feito o pagamento.')
+                    } else {
+                        window.alert('Pagamento Falhou!');
+                    }
+                    preloader(false);
+                });
+                }
 
-			    env: 'production', // sandbox | production
-
-			    // Specify the style of the button
-
-			    style: {
-			        label: 'buynow',
-			        fundingicons: true, // optional
-			        branding: true, // optional
-			        size:  'medium', // small | medium | large | responsive
-			        shape: 'rect',   // pill | rect
-			        color: 'gold',   // gold | blue | silver | black
-			    },
-
-			    // PayPal Client IDs - replace with your own
-			    // Create a PayPal app: https://developer.paypal.com/developer/applications/create
-
-			    client: {
-			        sandbox:    'AZDxjDScFpQtjWTOUtWKbyN_bDt4OgqaF4eYXlewfBP4-8aqX3PiV8e1GWU6liB2CUXlkA59kJXE7M6R',
-			        production: 'AakBLHEjmL1bP9uPQr2f1bF8DL8BDdiW2tZU3Oh-wS-rk7cgQkJfCsseW2YQ7Ujs79gEjyz5EX9c-O9c'
-			    },
-
-			    // Show the buyer a 'Pay Now' button in the checkout flow
-			    commit: true,
-
-			    // Wait for the PayPal button to be clicked
-
-			    payment: function(data, actions) {
-			        
-			        var valor_plano = parseFloat(vm.total).toFixed(2);
-			        var pais = vm.pais;
-			        var email = vm.email;
-			        if( pais == 'outro'){
-			            var moeda = 'USD';
-			        }else{
-			            var moeda = 'BRL';
-			        }
-			        return actions.payment.create({
-			            transactions: [{
-			                    amount: { total: valor_plano, currency: moeda 
-			                },
-			                description: email+"",
-			            }],
-			        });
-			    },
-
-			    // Wait for the payment to be authorized by the customer
-
-			    onAuthorize: function(data, actions) {
-			        var valor_plano = parseInt(vm.total);
-			       
-			        return actions.payment.execute().then(function(data) {
-			            if(data.state == 'approved'){
-			                window.alert('Pagamento Aprovado, Plano será liberado logo em seguida!');
-			                window.location.href = vm.url_obrigado_profissional;                    
-			            }
-			            if(data.state == 'failed'){
-			                window.alert('Pagamento Falhou!');
-			            }
-			            if(data.state == 'created'){
-			                window.alert('Por favor entre em contato, para podermos liberar seu plano caso tenha feito o pagamento.')
-			            }                
-			        });
-			    }
-
-			}, '#paypal-button-container');
-
+            }).render('#paypal-button-container');
 		},
-		props:[,'profissional','url_obrigado_profissional','email'],
+		props:[,'profissional','pais','url_obrigado_profissional','email'],
 		data(){
 			return {
 				plano:'',
-				pais:'brasil',
 				cupom_desconto:'',
 				desconto:0,
 				erro:'',
@@ -137,7 +104,7 @@
             	if(this.plano != ''){
 	                var vm = this;
 	                axios.post('./cupom/desconto/validar',{cupom_desconto: this.cupom_desconto}).then( res => {
-	                    
+
 	                    if(res.data.erro == 0){
 
 	                        vm.desconto = res.data.resultado.desconto;

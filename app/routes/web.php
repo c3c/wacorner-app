@@ -26,7 +26,7 @@ $this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' =
 	$this->get('/gestao','GestaoController@index')->name('gestao');
 	$this->get('/gestao/show','GestaoController@show')->name('gestao.show');
 	$this->post('/gestao/update','GestaoController@update')->name('gestao.update');
-	
+
 
 	//ENTRADA REGISTRADAS PARA GESTÃO
 	$this->post('/gestao/entrada/criar','EntradaController@criar')->name('gestao.entrada.criar');
@@ -50,7 +50,7 @@ $this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' =
 	$this->get('/robos/{id}/data/{data}','RoboController@sendListRobo')->name('robos.send.list');
 	$this->get('/robos/jogos/notificados/delete/all','RoboController@excluirTodasNotificacoes')->name('robos.notificacoes.delete.all');
 	$this->get('/robos/jogos/notificados/delete/{id}','RoboController@excluirNotificacao')->name('robos.notificacoes.delete.id');
-	
+
 
 	//MINHAS LISTAS
 	$this->get('/lista','ListaController@index')->name('lista');
@@ -70,19 +70,19 @@ $this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' =
 	$this->get('/live','AdminController@live')->name('admin.live');
 	$this->get('/jogos-ao-vivo','AdminController@jogosAoVivo')->name('admin.jogos.aovivo');
 	$this->get('/live/search','AdminController@liveSearch')->name('admin.live.search');
-	
+
 	//Over ligas
 	$this->get('/over/ligas','EstatisticasController@lista_over_liga')->name('admin.over.ligas');
-	
+
 	//Over times
 	$this->get('/over/times','EstatisticasController@lista_over_time')->name('admin.over.times');
-	
+
 	//Jogos de amanhã
 	$this->get('/amanha','AdminController@index_amanha')->name('admin.amanha');
-	
+
 	//Jogo especifico
 	$this->get('/jogo/{id}','JogoController@index')->name('admin.jogo');
-	
+
 	//End point - Jogos por estrategia e data - SEM FILTROS
 	$this->get('/jogos/{estrategia}/{data}','AdminController@jogosEstrategia')->name('admin.jogos.estrategia');
 
@@ -98,7 +98,7 @@ $this->group(['middleware' => ['auth','ativo','auth.unique.user'], 'namespace' =
 	$this->get('/jogos-estatistica/{estatistica}/{data}','EstatisticasController@jogosEstatisticas')->name('admin.jogos.estatistica');
 
 	//Lista jogos por estrategia e data
-	$this->get('/jogos-estatistica/index/{estatistica}/{data}','EstatisticasController@index')->name('admin.estatistica');	
+	$this->get('/jogos-estatistica/index/{estatistica}/{data}','EstatisticasController@index')->name('admin.estatistica');
 });
 
 //SÓ PRECISA ESTAR LOGADO PARA ACESSAR
@@ -114,7 +114,7 @@ $this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin
 	$this->get('/indicados/','IndicadoController@index')->name('indicados');
 	$this->get('/indicados/{id}','IndicadoController@show')->name('indicados.show');
 	$this->get('/indicados/{id}/converter-dias','IndicadoController@converterDias')->name('indicados.converter.dias');
-	
+
 
 	//CUPONS DOS USUARIOS PARCEIROS
 	$this->get('/cupon/user','CuponController@index_user')->name('cupon.user');
@@ -126,8 +126,10 @@ $this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin
 	$this->get('/venda/expirado', 'VendaController@expirado')->name('venda.expirado');
 	$this->get('/venda/paypal/{plano}', 'VendaController@index_paypal')->name('venda.paypal.new');
 	$this->get('/venda/paypal/', 'VendaController@index_paypal')->name('venda.paypal');
+	$this->get('/venda/paypal-br/', 'VendaController@index_paypal_br')->name('venda.paypal.br');
 	$this->get('/venda/transferencia/', 'VendaController@index_transferencia')->name('venda.transferencia');
 	$this->get('/venda/picpay/', 'VendaController@index_picpay')->name('venda.picpay');
+	$this->post('/venda/picpay/purchase', 'PicPayController@purchasePicpay')->name('venda.picpay.purchase');
 	$this->get('/venda/cupom/promocional', 'VendaController@index_cupom')->name('venda.cupom');
 	$this->post('/venda/cupom/promocional/validar', 'VendaController@index_cupom_validar')->name('venda.cupom.validar');
 	$this->post('/venda/cupom/desconto/validar', 'VendaController@cupom_desconto_validar')->name('venda.cupom.desconto.validar');
@@ -135,8 +137,8 @@ $this->group(['middleware' => ['auth','auth.unique.user'], 'namespace' => 'Admin
 	$this->get('/venda/show/{id}', 'VendaController@show')->name('venda.show.user');
 	$this->get('/venda/delete/{id}', 'VendaController@delete')->name('venda.delete');
 	$this->get('/venda/obrigado/{tipo}', 'VendaController@obrigado')->name('venda.obrigado');
-	
-	
+
+
 	$this->get('/usuario/perfil','UserController@perfil')->name('usuario.perfil');
 	$this->get('/usuario/perfil/{id}','UserController@perfil')->name('usuario.perfil.id');
 	$this->post('/usuario/update','UserController@perfilUpdate')->name('usuario.perfil.update');
@@ -186,6 +188,8 @@ $this->get('/', 'Site\HomeController@index')->name('home');
 //Receber notificacoes da API do pagseguro
 $this->post('/venda/pagseguro', 'Admin\VendaController@status')->name('venda.pagseguro');
 $this->get('/venda/pagseguro', 'Admin\VendaController@status')->name('venda.pagseguro');
+
+$this->post('/venda/picpay/status', 'Admin\PicPayController@statusPicpay')->name('venda.picpay.status');
 
 //Atualizar os jogos
 $this->get('/update', 'UpdateController@all');
