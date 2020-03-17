@@ -17,7 +17,7 @@ COPY ./app .
 RUN cp .env.production .env
 
 COPY ./php-fpm/php-ini-overrides.ini /etc/php/7.2/fpm/conf.d/99-overrides.ini
-COPY ./supervisor/migrate.sh /application
+COPY ./supervisor/migrate-supervisor.sh /application
 
 # Fix debconf warnings upon build
 ARG DEBIAN_FRONTEND=noninteractive
@@ -35,7 +35,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 
 RUN apt-get install nodejs -y
 
-RUN ["chmod","+x","migrate.sh"]
+RUN ["chmod","+x","migrate-supervisor.sh"]
 
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -44,4 +44,4 @@ RUN apt-get update \
 COPY ./supervisor/supervisord.conf /etc/supervisor
 COPY ./supervisor/configs-supervisor /etc/supervisor/conf.d
 
-ENTRYPOINT ["sh","/application/migrate.sh"]
+ENTRYPOINT ["sh","/application/migrate-supervisor.sh"]
