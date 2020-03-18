@@ -3,7 +3,7 @@
 		<div class="box-header">
 			<div class="row">
 				<div class="col-md-2">
-					<h3 class="box-title"><i class="fa fa-dashboard"></i> Jogos Ao Vivo</h3>
+					<h3 class="box-title"><i class="fa fa-dashboard"></i>Ao Vivo</h3>
 				</div>
 				<div class="col-md-3">
 					<div class="form-group">
