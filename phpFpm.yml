@@ -1,0 +1,23 @@
+version: '3.3'
+
+services:
+  php-fpm:
+    image: wesleyvieira12/wacorner-php-fpm:v4
+    networks:
+      - default
+      - traefik-public
+    deploy:
+        replicas: 3
+        # placement:
+        #   constraints: 
+        #     - node.role == worker
+    depends_on:
+      - traefik
+      - consul-leader
+      - mysql
+
+networks:
+  traefik-public:
+    external: true
+  default:
+    attachable: true

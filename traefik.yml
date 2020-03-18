@@ -1,0 +1,311 @@
+version: '3.3'
+
+services:
+  portainer:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    ports:
+      - 9000:9000
+      - 8000:8000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - traefik-default
+      - traefik-public
+    deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+        labels:
+            - traefik.frontend.rule=Host:portainer.wacorner.com
+            - traefik.enable=true
+            - traefik.port=9000
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+    depends_on:
+      - traefik
+      - consul-leader
+      - mysql
+  redis:
+      image: redis:alpine
+      ports:
+        - "6379"
+      networks:
+        - traefik-default
+        - traefik-public
+      depends_on:
+        - consul-leader
+        - traefik
+      deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+  supervisor:
+    image: wesleyvieira12/wacorner-supervisor:v22
+    networks:
+      - traefik-default
+      - traefik-public
+    environment:
+      - APP_DEBUG=false
+      - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+      - LOG_LEVEL=debug
+      - TELESCOPE_ENABLED=false
+      - CACHE_DRIVER=redis
+      - SESSION_DRIVER=file
+    deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+        labels:
+            - traefik.frontend.rule=Host:supervisor.wacorner.com
+            - traefik.enable=true
+            - traefik.port=9001
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+    depends_on:
+      - traefik
+      - consul-leader
+      - mysql
+    
+  php-fpm:
+    image: wesleyvieira12/wacorner-php-fpm:v40
+    environment:
+     - APP_DEBUG=false
+     - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+     - LOG_LEVEL=debug
+     - TELESCOPE_ENABLED=false
+     - CACHE_DRIVER=redis
+     - SESSION_DRIVER=file
+    networks:
+      - traefik-default
+      - traefik-public
+    deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+    depends_on:
+      - traefik
+      - consul-leader
+      - mysql
+    
+  nginx:
+    image: wesleyvieira12/wacorner-nginx:v1
+    networks:
+      - traefik-default
+      - traefik-public
+    deploy:
+        replicas: 5
+        placement:
+          constraints: 
+            - node.role == worker
+        labels:
+            - traefik.frontend.rule=Host:wacorner.com
+            - traefik.enable=true
+            - traefik.port=80
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            - traefik.backend.loadbalancer.stickiness=true
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+    depends_on:
+      - traefik
+      - consul-leader
+      - php-fpm
+      - mysql
+  visualizer:
+    image: dockersamples/visualizer:stable
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-default
+      - traefik-public
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      labels:
+            - traefik.frontend.rule=Host:visualizer.wacorner.com
+            - traefik.enable=true
+            - traefik.port=8080
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+    depends_on:
+      - traefik
+      - consul-leader
+  phpmyadmin:
+      image: bitnami/phpmyadmin:latest
+      environment:
+        - PHPMYADMIN_ALLOW_ARBITRARY_SERVER=true
+      networks:
+        - traefik-default
+        - traefik-public
+      depends_on:
+        - mysql
+        - consul-leader
+        - traefik
+      deploy:
+        replicas: 1
+        # placement:
+        #   constraints: 
+        #     - node.role == worker
+        labels:
+            - traefik.frontend.rule=Host:phpmyadmin.wacorner.com
+            - traefik.enable=true
+            - traefik.port=80
+            - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+            - traefik.docker.network=traefik-public
+            # Traefik service that listens to HTTP
+            - traefik.redirectorservice.frontend.entryPoints=http
+            - traefik.redirectorservice.frontend.redirect.entryPoint=https
+            # Traefik service that listens to HTTPS
+            - traefik.webservice.frontend.entryPoints=https
+  mysql:
+      image: mysql
+      command: --default-authentication-plugin=mysql_native_password
+      volumes:
+        - db_data:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=Moderador12@
+        - MYSQL_DATABASE=wacorner_bd
+        - MYSQL_USER=wacorner_user
+        - MYSQL_PASSWORD=Moderador12@
+      ports:
+        - "3306:3306"
+      networks:
+        - traefik-default
+        - traefik-public
+      depends_on:
+        - consul-leader
+        - traefik
+      deploy:
+        replicas: 1
+        placement:
+          constraints: 
+            - node.role == manager
+  consul-leader:
+    image: consul
+    command: agent -server -client=0.0.0.0 -bootstrap -ui
+    volumes:
+      - consul-data-leader:/consul/data
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    networks:
+      - traefik-default
+      - traefik-public
+    deploy:
+      labels:
+        - traefik.frontend.rule=Host:consul.wacorner.com
+        - traefik.enable=true
+        - traefik.port=8500
+        - traefik.tags=${TRAEFIK_PUBLIC_TAG:-traefik-public}
+        - traefik.docker.network=traefik-public
+        # Traefik service that listens to HTTP
+        - traefik.redirectorservice.frontend.entryPoints=http
+        - traefik.redirectorservice.frontend.redirect.entryPoint=https
+        # Traefik service that listens to HTTPS
+        - traefik.webservice.frontend.entryPoints=https
+        - traefik.frontend.auth.basic.users=root:$$apr1$$1VXPIXMN$$ukv0dy9P0ukeyfnh8/X4/.
+  consul-replica:
+    image: consul
+    command: agent -server -client=0.0.0.0 -retry-join="consul-leader"
+    volumes:
+      - consul-data-replica:/consul/data
+    environment:
+      - CONSUL_BIND_INTERFACE=eth0
+      - 'CONSUL_LOCAL_CONFIG={"leave_on_terminate": true}'
+    networks:
+      - traefik-default
+      - traefik-public
+    deploy:
+      replicas: 3
+      placement:
+        preferences:
+          - spread: node.id
+  traefik:
+    image: traefik:v1.7
+    ports:
+      - 80:80
+      - 443:443
+    deploy:
+      replicas: 3
+      placement:
+        constraints:
+          - node.role == manager
+        preferences:
+          - spread: node.id
+      labels:
+        - traefik.frontend.rule=Host:traefik.wacorner.com
+        - traefik.enable=true
+        - traefik.port=8080
+        - traefik.tags=traefik-public
+        - traefik.docker.network=traefik-public
+        # Traefik service that listens to HTTP
+        - traefik.redirectorservice.frontend.entryPoints=http
+        - traefik.redirectorservice.frontend.redirect.entryPoint=https
+        # Traefik service that listens to HTTPS
+        - traefik.webservice.frontend.entryPoints=https
+        - traefik.frontend.auth.basic.users=root:$$apr1$$1VXPIXMN$$ukv0dy9P0ukeyfnh8/X4/.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      --docker
+      --docker.swarmmode
+      --docker.watch
+      --docker.exposedbydefault=false
+      --constraints=tag==traefik-public
+      --entrypoints='Name:http Address::80 Redirect.EntryPoint:https'
+      --entrypoints='Name:https Address::443 TLS'
+      --defaultentrypoints=http,https
+      --consul
+      --consul.endpoint="consul-leader:8500"
+      --acme
+      --acme.email=wesleyvieira12@gmail.com
+      --acme.storage="traefik/acme/account"
+      --acme.entryPoint=https
+      --acme.httpChallenge.entryPoint=http
+      --acme.onhostrule=true
+      --acme.acmelogging=true
+      --logLevel=INFO
+      --accessLog
+      --api
+    networks:
+      - traefik-default
+      - traefik-public
+    depends_on:
+      - consul-leader
+        
+volumes:
+  portainer_data:
+  consul-data-leader:
+  consul-data-replica:
+  db_data:
+
+networks:
+  traefik-public:
+    external: true
+  traefik-default:
+    driver: overlay

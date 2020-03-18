@@ -1,0 +1,126 @@
+version: "3.1"
+services:
+##################################################
+#                   REDIS                        #
+##################################################
+    redis:
+      image: redis:alpine
+      # container_name: redis
+      restart: always
+      ports:
+        - "6379:6379"
+      networks:
+        - app-network 
+##################################################
+#                 PHPMYADMIN                     #
+##################################################
+    phpmyadmin:
+      image: bitnami/phpmyadmin:latest
+      environment:
+        - PHPMYADMIN_ALLOW_ARBITRARY_SERVER=true
+      ports:
+        - "8081:80"
+      networks:
+        - app-network
+
+##################################################
+#                 MYSQL                          #
+##################################################
+    mysql:
+      image: mysql:5.7
+      # container_name: mysql
+      working_dir: /var/lib/mysql
+      restart: always
+      volumes:
+        - ./.docker/dbdata:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=Moderador12@
+        - MYSQL_DATABASE=wacorner_bd
+        - MYSQL_USER=wacorner_user
+        - MYSQL_PASSWORD=Moderador12@
+      ports:
+        - "3306:3306"
+      networks:
+        - app-network
+##################################################
+#                 NGINX                          #
+##################################################
+    nginx:
+      build:
+        context: ./
+        dockerfile: Dockerfile-nginx
+      container_name: nginx
+      working_dir: /application
+      restart: always
+      volumes:
+        - ./app:/application
+      ports:
+        - "8080:80"
+      networks:
+        - app-network
+
+    https-portal:
+      image: steveltn/https-portal:1
+      ports:
+        - 80:80
+        - 443:443
+      restart: always
+      volumes:
+        - ./ssl_certs:/var/lib/https-portal
+      environment:
+        DOMAINS: 'wacorner.com -> http://nginx:8080'
+        STAGE: 'production'
+##################################################
+#                 SUPERVISOR                     #
+##################################################
+    supervisor:
+      build:
+        context: ./
+        dockerfile: Dockerfile-supervisor
+      # container_name: supervisor
+      working_dir: /application
+      restart: always
+      volumes:
+        - ./app:/application
+      ports:
+        - "9001:9001"
+      # links:
+      #   # - mysql
+      #   - redis
+      networks:
+        - app-network
+      # depends_on:
+      #   # - "mysql"
+      #   - "redis"
+##################################################
+#                 PHP-FPM                        #
+##################################################
+    php-fpm:
+      build:
+        context: ./
+        dockerfile: Dockerfile-php-fpm
+      # container_name: php-fpm
+      working_dir: /application
+      volumes:
+        - ./app:/application
+      restart: always
+      networks:
+        - app-network
+      environment:
+        - APP_DEBUG=true
+        - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+        - LOG_LEVEL=info
+        - TELESCOPE_ENABLED=false
+        - CACHE_DRIVER=redis
+        - SESSION_DRIVER=file
+      # links:
+      #   - mysql
+      #   - redis
+      # depends_on:
+      #   - "mysql"
+      #   - "redis"
+##################################################
+#              REDES DOCKER                      #
+##################################################
+networks:
+  app-network:
