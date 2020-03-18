@@ -294,12 +294,12 @@
             <h2 class="section-title">Nossos planos</h2>
             <div class="intro"></div>
             <div class="pricing-wrapper row">
-                <div class="item item-1 col-md-6 col-12">
+               <!-- <div class="item item-1 col-md-6 col-12">
                     <div class="item-inner">
                         <h3 class="item-heading">GRÁTIS</h3>
                         <div class="price-figure">
                             <span class="currency">R$</span><span class="number">0</span>
-                        </div><!--//price-figure-->
+                        </div>
                         <ul class="list-unstyled mb-3">
                             <li class="mb-2"><i class="fa fa-check"></i> Tudo liberado</li>
                             <li class="mb-2"><i class="fa fa-calendar"></i> Válido por 1 dia</li>
@@ -307,8 +307,8 @@
 
                         <a class="btn btn-cta" href="{{route('venda')}}">Adquirir</a>
 
-                    </div><!--//item-inner-->
-                </div><!--//item-->
+                    </div>
+                </div>//item-->
                 <div class="item item-3 col-md-6 col-12">
                     <div class="item-inner">
                         <h3 class="item-heading">Plano Profissional<br><span class="item-heading-desc">(Cliente profissional)</span></h3>
