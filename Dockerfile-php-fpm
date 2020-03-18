@@ -15,7 +15,8 @@ WORKDIR "/application"
 COPY ./app .
 
 RUN cp .env.production .env
-
+RUN rm -rf vendor/
+RUN rm -rf node_modules/
 COPY ./php-fpm/php-ini-overrides.ini /etc/php/7.2/fpm/conf.d/99-overrides.ini
 COPY ./php-fpm/migrate.sh /application
 
