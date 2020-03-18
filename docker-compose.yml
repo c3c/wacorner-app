@@ -61,8 +61,6 @@ services:
 
     https-portal:
       image: steveltn/https-portal:1
-      depends_on:
-        - web
       ports:
         - 80:80
         - 443:443
