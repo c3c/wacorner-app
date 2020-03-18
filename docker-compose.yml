@@ -68,8 +68,8 @@ services:
       volumes:
         - ./ssl_certs:/var/lib/https-portal
       environment:
-        DOMAINS: 'wacorner.com -> http://nginx:8080 #production'
-        CLIENT_MAX_BODY_SIZE: 64M
+        DOMAINS: 'wacorner.com -> http://nginx:8080'
+        STAGE: 'production'
 ##################################################
 #                 SUPERVISOR                     #
 ##################################################
