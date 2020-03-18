@@ -49,17 +49,17 @@ services:
       build:
         context: ./
         dockerfile: Dockerfile-nginx
-      # container_name: nginx
+      container_name: nginx
       working_dir: /application
       restart: always
       volumes:
         - ./app:/application
-      ports:
-       - "80:80"
       links:
        - php-fpm
       networks:
         - app-network
+      environment:
+        - VIRTUAL_HOST=wacorner.com
 ##################################################
 #                 SUPERVISOR                     #
 ##################################################
