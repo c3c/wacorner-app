@@ -5,7 +5,7 @@ services:
 ##################################################
     redis:
       image: redis:alpine
-      container_name: redis
+      # container_name: redis
       restart: always
       ports:
         - "6379:6379"
@@ -28,7 +28,7 @@ services:
 ##################################################
     mysql:
       image: mysql:5.7
-      container_name: mysql
+      # container_name: mysql
       working_dir: /var/lib/mysql
       restart: always
       volumes:
@@ -49,7 +49,7 @@ services:
       build:
         context: ./
         dockerfile: Dockerfile-nginx
-      container_name: nginx
+      # container_name: nginx
       working_dir: /application
       restart: always
       volumes:
@@ -67,7 +67,7 @@ services:
       build:
         context: ./
         dockerfile: Dockerfile-supervisor
-      container_name: supervisor
+      # container_name: supervisor
       working_dir: /application
       restart: always
       volumes:
@@ -89,7 +89,7 @@ services:
       build:
         context: ./
         dockerfile: Dockerfile-php-fpm
-      container_name: php-fpm
+      # container_name: php-fpm
       working_dir: /application
       volumes:
         - ./app:/application
@@ -97,7 +97,7 @@ services:
       networks:
         - app-network
       environment:
-        - APP_DEBUG=false
+        - APP_DEBUG=true
         - LOG_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
         - LOG_LEVEL=info
         - TELESCOPE_ENABLED=false
