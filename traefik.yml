@@ -104,7 +104,7 @@ services:
       - mysql
     
   nginx:
-    image: wesleyvieira12/wacorner-nginx:v1
+    image: wesleyvieira12/wacorner-nginx:v2
     networks:
       - traefik-default
       - traefik-public
