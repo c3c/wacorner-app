@@ -59,19 +59,19 @@ services:
       networks:
         - app-network
 
-      https-portal:
-        image: steveltn/https-portal:1
-        depends_on:
-          - web
-        ports:
-          - 80:80
-          - 443:443
-        restart: always
-        volumes:
-          - ./ssl_certs:/var/lib/https-portal
-        environment:
-          DOMAINS: 'wacorner.com -> http://nginx:80 #production'
-          CLIENT_MAX_BODY_SIZE: 64M
+    https-portal:
+      image: steveltn/https-portal:1
+      depends_on:
+        - web
+      ports:
+        - 80:80
+        - 443:443
+      restart: always
+      volumes:
+        - ./ssl_certs:/var/lib/https-portal
+      environment:
+        DOMAINS: 'wacorner.com -> http://nginx:80 #production'
+        CLIENT_MAX_BODY_SIZE: 64M
 ##################################################
 #                 SUPERVISOR                     #
 ##################################################
