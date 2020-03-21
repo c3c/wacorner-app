@@ -194,9 +194,9 @@ class RoboRepository
                                     "*\n⏰Tempo:* ".$jogoAoVivo->tempo;
                                     $result = $this->verificarCartaoVermelho($jogoAoVivo->eventos);
 
-                                    if($resultado_jogo == "fora" && $result[0] != 0){
+                                    if($resultado_jogo != "casa" && $result[0] != 0){
                                         $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s), MAS está 🌟 MELHOR 🌟 no jogo!";
-                                    } else if ($resultado_jogo == "casa" && $result[1] != 0){
+                                    } else if ($resultado_jogo != "fora" && $result[1] != 0){
                                         $texto_colombiano .="\n\n🔴 Time de Fora tem ".$result[1]." jogador(es) expulso(s), MAS está 🌟 MELHOR 🌟 no jogo!";
                                     } else if($result[0] != 0){
                                         $texto_colombiano .="\n\n🔴 Time da Casa tem ".$result[0]." jogador(es) expulso(s)!";
